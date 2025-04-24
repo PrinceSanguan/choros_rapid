@@ -5,347 +5,69 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $users = [
-            [
-                'name' => 'Admin',
-                'student_number' => 'administrator',
-                'major' => 'admin',
-                'sex' => 'F',
-                'course' => 'admin',
-                'year' => 'admin',
-                'password' => bcrypt('admin'),
-                'user_role' => 'admin',
-            ],
-            [
-                'name' => 'Prof. Juan Dela Cruz',
-                'student_number' => 'FAC-2023-002',
-                'major' => 'Information Technology',
-                'sex' => 'M',
-                'course' => 'BSIT',
-                'year' => 'N/A',
-                'password' => bcrypt('faculty123'),
-                'user_role' => 'faculty',
-            ],
-            [
-                'name' => 'Amaro, Irish Ancheta',
-                'student_number' => '22-SC-4015',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Bautista, Von Carlo Lea',
-                'student_number' => '22-SC-3232',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Berunio, Joshua Donato',
-                'student_number' => '22-SC-3164',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Bugagon, Emesto Jr. Bugagon',
-                'student_number' => '15-SC-2264',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Cayabyab, Arsonval Karl Mejia',
-                'student_number' => '15-SC-2121',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Celestian, Ronald',
-                'student_number' => '22-SC-3920',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Crisostomo, Marion Keithlord Dela Cruz',
-                'student_number' => '22-SC-3495',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'De Guzman, M-jay Fernandez',
-                'student_number' => '22-SC-3108',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'De Vera, Ella Mae Alo-ot',
-                'student_number' => '22-SC-2816',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Dulay, Cindy Agaser',
-                'student_number' => '22-SC-4004',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Dupitas, Christian Daniel Manzon',
-                'student_number' => '22-SC-3193',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Frias, Christian Allen Diaz',
-                'student_number' => '22-SC-3247',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Gutierrez, Krisha Mae Basco',
-                'student_number' => '20-SC-1369',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Hisita, Cliff Dazel Ortiz',
-                'student_number' => '22-SC-3923',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Jorgio, Carl Erick Mercado',
-                'student_number' => '22-SC-4000',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Mamauag, Zjie Baldeo',
-                'student_number' => '21-SC-1903',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Manzon, Jerome Bacurin',
-                'student_number' => '22-SC-3499',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Matabang, Kayrille Kate Malasan',
-                'student_number' => '20-SC-0856',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Ocampo, Jonathan Apillera',
-                'student_number' => '22-SC-3237',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Pacania, Kristine Angel T.',
-                'student_number' => '21-SC-2539',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Paculan, Guia Ysabelle Mallari',
-                'student_number' => '22-SC-2912',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Peligro, Carmela Desirey Licuanan',
-                'student_number' => '20-SC-0806',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Pioquinto, Ramil Paragas',
-                'student_number' => '22-SC-2991',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Reyes, Justin Jay Rosario',
-                'student_number' => '22-SC-3810',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Rosario, Cherry Rose Ramos',
-                'student_number' => '20-SC-0780',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Samera, John Dave De Vera',
-                'student_number' => '21-SC-1494',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Sison, Marco Dela Cruz',
-                'student_number' => '22-SC-3905',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Tamayo, Alfred Macaraeg',
-                'student_number' => '22-SC-3750',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Tugade, John Randy Nunez',
-                'student_number' => '22-SC-4058',
-                'major' => 'SC_BSIT',
-                'sex' => 'F',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Ventinilla, Yzza Louise Reyes',
-                'student_number' => '22-SC-4007',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-            [
-                'name' => 'Villanueva, Karl Cesar Chua',
-                'student_number' => '22-SC-3808',
-                'major' => 'SC_BSIT',
-                'sex' => 'M',
-                'course' => 'CHMBAC',
-                'year' => 'THIRD YEAR',
-                'password' => bcrypt('123'),
-                'user_role' => 'client',
-            ],
-        ];
+        // Create admin user
+        $admin = User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'position' => 'admin',
+        ]);
 
-        foreach ($users as $userData) {
-            User::create($userData);
-        }
+        $admin->roles()->attach(Role::where('slug', 'admin')->first());
+
+        // Create a project manager
+        $manager = User::create([
+            'name' => 'Project Manager',
+            'email' => 'manager@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'position' => 'project-manager',
+        ]);
+
+        $manager->roles()->attach(Role::where('slug', 'project-manager')->first());
+
+        // Create an accountant
+        $accountant = User::create([
+            'name' => 'Accountant User',
+            'email' => 'accountant@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'position' => 'accountant',
+        ]);
+
+        $accountant->roles()->attach(Role::where('slug', 'accountant')->first());
+
+        // Create an inventory staff
+        $inventory = User::create([
+            'name' => 'Inventory Staff',
+            'email' => 'inventory@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'position' => 'inventory-staff',
+        ]);
+
+        $inventory->roles()->attach(Role::where('slug', 'inventory-staff')->first());
+
+        // Create a supplier
+        $supplier = User::create([
+            'name' => 'Supplier User',
+            'email' => 'supplier@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'position' => 'supplier',
+        ]);
+
+        $supplier->roles()->attach(Role::where('slug', 'supplier')->first());
     }
 }
