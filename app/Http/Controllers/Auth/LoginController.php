@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -15,45 +15,55 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function processLogin(Request $request)
+    public function login(Request $request)
     {
-        $credentials = $request->only('student_number', 'password');
-
-        // Add debug logging
-        Log::debug('Attempting login with: ' . $request->student_number);
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            Log::debug('Login successful for: ' . $user->name . ' (Role: ' . $user->user_role . ')');
-
-            if ($user->user_role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->user_role === 'faculty') {
-                // Changed from admin.faculty.index to faculty.dashboard
-                return redirect()->route('faculty.dashboard');
-            } elseif ($user->user_role === 'client') {
-                return redirect()->route('client.dashboard');
-            }
-        } else {
-            Log::debug('Login failed for: ' . $request->student_number);
+            $request->session()->regenerate();
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
-            'student_number' => 'The provided credentials do not match our records.',
-        ]);
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
 
-    /**
-     * Log the user out of the application.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'user',
+        ]);
+
+        Auth::login($user);
+
+        return redirect('/');
+    }
+
     public function logout(Request $request)
     {
-        Session::flush();
         Auth::logout();
 
-        return redirect()->route('welcome');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }
