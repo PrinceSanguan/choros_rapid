@@ -68,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('inventory', InventoryController::class);
 
     // Supplier routes
-    Route::resource('suppliers', SupplierController::class);
+    Route::resource('supplier', SupplierController::class);
 
     // Customer routes
     Route::resource('customers', CustomerController::class);

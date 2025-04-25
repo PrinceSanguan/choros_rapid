@@ -11,16 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Create suppliers table if it doesn't exist
+        if (!Schema::hasTable('suppliers')) {
+            Schema::create('suppliers', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('contact_person')->nullable();
+                $table->string('email')->nullable();
+                $table->string('phone')->nullable();
+                $table->text('address')->nullable();
+                $table->timestamps();
+            });
+        }
+
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('product_title');
             $table->string('category')->nullable();
+            $table->text('description')->nullable();
+            $table->string('photo')->nullable();
+            $table->integer('quantity')->default(0);
+            $table->decimal('buying_price', 10, 2)->default(0.00);
+            $table->decimal('selling_price', 10, 2)->default(0.00);
             $table->integer('in_stock')->default(0);
-            $table->string('unit')->nullable();
-            $table->decimal('unit_price', 10, 2)->default(0.00);
-            $table->integer('reorder_level')->default(10);
+            $table->timestamp('product_added')->nullable();
+            $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }

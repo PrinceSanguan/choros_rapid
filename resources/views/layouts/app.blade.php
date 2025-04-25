@@ -251,8 +251,8 @@
                             Suppliers <i class="fas fa-chevron-right arrow"></i>
                         </a>
                         <ul class="dropdown-menu collapse" id="suppliersMenu">
-                            <li><a class="dropdown-item" href="{{ route('suppliers.create') }}">— Add Supplier</a></li>
-                            <li><a class="dropdown-item" href="{{ route('suppliers.index') }}">— Manage Suppliers</a></li>
+                            <li><a class="dropdown-item" href="{{ route('supplier.create') }}">— Add Supplier</a></li>
+                            <li><a class="dropdown-item" href="{{ route('supplier.index') }}">— Manage Suppliers</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

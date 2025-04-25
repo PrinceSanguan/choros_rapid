@@ -15,23 +15,13 @@ class Supplier extends Model
         'email',
         'phone',
         'address',
-        'company_name',
-        'user_id',
     ];
 
     /**
-     * Get the inventory items supplied by this supplier.
+     * Get the inventory items provided by this supplier.
      */
-    public function inventoryItems()
+    public function inventories()
     {
         return $this->hasMany(Inventory::class);
-    }
-
-    /**
-     * Get the user associated with this supplier.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 }
