@@ -24,20 +24,22 @@ return new class extends Migration
             });
         }
 
-        Schema::create('inventories', function (Blueprint $table) {
-            $table->id();
-            $table->string('product_title');
-            $table->string('category')->nullable();
-            $table->text('description')->nullable();
-            $table->string('photo')->nullable();
-            $table->integer('quantity')->default(0);
-            $table->decimal('buying_price', 10, 2)->default(0.00);
-            $table->decimal('selling_price', 10, 2)->default(0.00);
-            $table->integer('in_stock')->default(0);
-            $table->timestamp('product_added')->nullable();
-            $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('inventories')) {
+            Schema::create('inventories', function (Blueprint $table) {
+                $table->id();
+                $table->string('product_title');
+                $table->string('category')->nullable();
+                $table->text('description')->nullable();
+                $table->string('photo')->nullable();
+                $table->integer('quantity')->default(0);
+                $table->decimal('buying_price', 10, 2)->default(0.00);
+                $table->decimal('selling_price', 10, 2)->default(0.00);
+                $table->integer('in_stock')->default(0);
+                $table->timestamp('product_added')->nullable();
+                $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

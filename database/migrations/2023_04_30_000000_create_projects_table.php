@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->date('date');
-            $table->string('location');
-            $table->string('contractor');
-            $table->string('size');
-            $table->date('start_date')->nullable();
-            $table->string('project_manager')->nullable();
-            $table->text('description')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('projects')) {
+            Schema::create('projects', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->date('date');
+                $table->string('location');
+                $table->string('contractor');
+                $table->string('size');
+                $table->date('start_date')->nullable();
+                $table->string('project_manager')->nullable();
+                $table->text('description')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
