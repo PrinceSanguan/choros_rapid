@@ -7,69 +7,113 @@
     <!-- Styles -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
         .sidebar {
             background-color: #FF8000;
             min-height: 100vh;
             padding-top: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
+
         .sidebar .logo {
             text-align: center;
             color: #fff;
             margin-bottom: 20px;
         }
+
         .sidebar .logo img {
             max-width: 100px;
             margin-bottom: 10px;
         }
+
         .sidebar .nav-link {
             color: #333;
             padding: 10px 15px;
             transition: all 0.3s;
         }
+
         .sidebar .nav-link:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
+
         .sidebar .dropdown-menu {
             background-color: #FFA64D;
             border: none;
             width: 100%;
             padding: 0;
         }
+
         .sidebar .dropdown-item {
             color: #333;
             padding: 10px 15px 10px 30px;
         }
+
         .sidebar .dropdown-item:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
+
         .dashboard-card {
-            background-color: #f8f8f8;
+            background-color: #f0ebe8;
             border-radius: 5px;
             padding: 15px;
             height: 200px;
             margin-bottom: 20px;
         }
+
         .calendar-card {
-            background-color: #f8f8f8;
+            background-color: #f0ebe8;
             border-radius: 5px;
             padding: 15px;
             margin-bottom: 20px;
         }
+
         .calendar-header {
             background-color: #000;
             color: #fff;
             padding: 5px;
             text-align: center;
         }
+
         .calendar-table {
             width: 100%;
             margin-top: 10px;
         }
+
         .calendar-table td {
             text-align: center;
             padding: 5px;
         }
+
+        .header-date {
+            color: #666;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+
+        .user-dropdown {
+            display: inline-block;
+        }
+
+        .user-dropdown-btn {
+            background: none;
+            border: none;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-dropdown-btn img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
     </style>
+    @yield('styles')
 </head>
 <body>
     <div class="container-fluid">
@@ -160,13 +204,14 @@
                 <div class="container py-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>@yield('title')</h2>
-                        <div>
-                            <span class="me-3">{{ date('F d, Y, h:i a') }}</span>
-                            <div class="dropdown d-inline-block">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    {{ Auth::user()->name ?? 'User' }}
+                        <div class="d-flex align-items-center">
+                            <span class="header-date">{{ \Carbon\Carbon::now()->format('F d, Y, h:i a') }}</span>
+                            <div class="dropdown user-dropdown">
+                                <button class="user-dropdown-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <span>User</span>
+                                    <i class="fa fa-user-circle"></i>
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="#">Profile</a></li>
                                     <li>
                                         <form action="{{ route('logout') }}" method="POST">
