@@ -18,6 +18,7 @@ class BillingTransaction extends Model
         'payment_method',
         'description',
         'due_date',
+        'notes',
     ];
 
     protected $casts = [
