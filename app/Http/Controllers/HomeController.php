@@ -94,12 +94,14 @@ class HomeController extends Controller
             ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
             ->sum('amount');
 
-        // Project accomplishment calculation (example: percentage of completed projects)
+        // Project accomplishment calculation
         $totalProjects = Project::count();
         $completedProjects = Project::where('status', 'completed')->count();
+        $ongoingProjects = Project::where('status', 'ongoing')->count();
+        $pendingProjects = Project::where('status', 'pending')->count();
         $projectAccomplishment = $totalProjects > 0 ? round(($completedProjects / $totalProjects) * 100) : 0;
 
-        // Area accomplishment data - can be customized based on your business logic
+        // Area accomplishment data
         $areaAccomplishment = [
             'design' => 85,
             'construction' => 70,
@@ -124,14 +126,15 @@ class HomeController extends Controller
             'monthlyIncome',
             'lowStockItems',
             'topCustomers',
-            // New variables
             'weeklyAnnualSale',
             'monthlyAnnualSale',
             'projectAccomplishment',
             'areaAccomplishment',
             'topClients',
             'totalProjects',
-            'completedProjects'
+            'completedProjects',
+            'ongoingProjects',
+            'pendingProjects'
         ));
     }
 
