@@ -10,6 +10,7 @@ use App\Models\Customer;
 use App\Models\User;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -70,6 +71,36 @@ class HomeController extends Controller
             ->take(5)
             ->get();
 
+        // New data for the enhanced dashboard
+        $weeklyAnnualSale = BillingTransaction::where('status', 'paid')
+            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->sum('amount');
+        $monthlyAnnualSale = BillingTransaction::where('status', 'paid')
+            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->sum('amount');
+
+        // Project accomplishment calculation (example: percentage of completed projects)
+        $totalProjects = Project::count();
+        $completedProjects = Project::where('status', 'completed')->count();
+        $projectAccomplishment = $totalProjects > 0 ? round(($completedProjects / $totalProjects) * 100) : 0;
+
+        // Area accomplishment data - can be customized based on your business logic
+        $areaAccomplishment = [
+            'design' => 85,
+            'construction' => 70,
+            'planning' => 90,
+            'implementation' => 65
+        ];
+
+        // Top clients by purchase amount
+        $topClients = Customer::join('billing_transactions as bt', 'customers.id', '=', 'bt.customer_id')
+            ->select('customers.name', DB::raw('SUM(bt.amount) as total_purchase'))
+            ->where('bt.status', 'paid')
+            ->groupBy('customers.id', 'customers.name')
+            ->orderBy('total_purchase', 'desc')
+            ->take(5)
+            ->get();
+
         return view('admin.dashboard', compact(
             'users',
             'projectsCount',
@@ -77,7 +108,13 @@ class HomeController extends Controller
             'weeklyIncome',
             'monthlyIncome',
             'lowStockItems',
-            'topCustomers'
+            'topCustomers',
+            // New variables
+            'weeklyAnnualSale',
+            'monthlyAnnualSale',
+            'projectAccomplishment',
+            'areaAccomplishment',
+            'topClients'
         ));
     }
 
@@ -129,13 +166,48 @@ class HomeController extends Controller
             ->sum('amount');
         $lowStockItems = Inventory::where('in_stock', '<', 10)->count();
 
+        // New data for enhanced dashboard
+        $weeklyAnnualSale = BillingTransaction::where('status', 'paid')
+            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->sum('amount');
+        $monthlyAnnualSale = BillingTransaction::where('status', 'paid')
+            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->sum('amount');
+
+        // Project accomplishment - supplier perspective
+        $suppliedProjects = Project::whereHas('inventory')->count();
+        $totalProjects = Project::count();
+        $projectAccomplishment = $totalProjects > 0 ? round(($suppliedProjects / $totalProjects) * 100) : 0;
+
+        // Area accomplishment - supplier perspective
+        $areaAccomplishment = [
+            'materials_delivery' => 80,
+            'quality_assurance' => 75,
+            'on_time_delivery' => 90
+        ];
+
+        // Top clients for supplier
+        $topClients = Customer::join('projects as p', 'customers.id', '=', 'p.customer_id')
+            ->join('project_inventory as pi', 'p.id', '=', 'pi.project_id')
+            ->select('customers.name', DB::raw('COUNT(pi.inventory_id) as total_purchase'))
+            ->groupBy('customers.id', 'customers.name')
+            ->orderBy('total_purchase', 'desc')
+            ->take(5)
+            ->get();
+
         return view('supplier.dashboard', compact(
             'projectsCount',
             'recentProjects',
             'inventory',
             'weeklyIncome',
             'monthlyIncome',
-            'lowStockItems'
+            'lowStockItems',
+            // New variables
+            'weeklyAnnualSale',
+            'monthlyAnnualSale',
+            'projectAccomplishment',
+            'areaAccomplishment',
+            'topClients'
         ));
     }
 
@@ -152,13 +224,48 @@ class HomeController extends Controller
         $categoriesCount = Inventory::distinct('category')->count('category');
         $suppliersCount = Supplier::count();
 
+        // New data for enhanced dashboard
+        $weeklyAnnualSale = BillingTransaction::where('status', 'paid')
+            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->sum('amount');
+        $monthlyAnnualSale = BillingTransaction::where('status', 'paid')
+            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->sum('amount');
+
+        // Project accomplishment - inventory perspective
+        $inventoryUtilization = Inventory::sum('in_stock') > 0 ?
+            round((Inventory::sum('used') / (Inventory::sum('in_stock') + Inventory::sum('used'))) * 100) : 0;
+        $projectAccomplishment = $inventoryUtilization;
+
+        // Area accomplishment - inventory perspective
+        $areaAccomplishment = [
+            'stock_management' => 85,
+            'inventory_accuracy' => 92,
+            'distribution' => 78
+        ];
+
+        // Top clients by inventory usage
+        $topClients = Customer::join('projects as p', 'customers.id', '=', 'p.customer_id')
+            ->join('project_inventory as pi', 'p.id', '=', 'pi.project_id')
+            ->select('customers.name', DB::raw('SUM(pi.quantity) as total_purchase'))
+            ->groupBy('customers.id', 'customers.name')
+            ->orderBy('total_purchase', 'desc')
+            ->take(5)
+            ->get();
+
         return view('inventory.dashboard', compact(
             'inventoryCount',
             'lowStockItems',
             'lowStockItemsList',
             'recentItems',
             'categoriesCount',
-            'suppliersCount'
+            'suppliersCount',
+            // New variables
+            'weeklyAnnualSale',
+            'monthlyAnnualSale',
+            'projectAccomplishment',
+            'areaAccomplishment',
+            'topClients'
         ));
     }
 }

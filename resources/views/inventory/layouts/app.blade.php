@@ -37,6 +37,18 @@
             flex-direction: column;
             position: fixed;
             height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .menu-item span,
+        .sidebar.collapsed .submenu {
+            display: none;
         }
 
         .logo-container {
@@ -122,6 +134,11 @@
             flex: 1;
             margin-left: 250px;
             padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
         }
 
         .content-header {
@@ -194,6 +211,122 @@
             margin-left: 5px;
             color: #FF8000;
             font-weight: 600;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 10px;
+            right: -15px;
+            width: 30px;
+            height: 30px;
+            background-color: #FF8000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            z-index: 1001;
+            border: 2px solid #fff;
+        }
+
+        .toggle-icon {
+            color: #fff;
+            font-size: 14px;
+            transition: transform 0.3s;
+        }
+
+        .sidebar.collapsed .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Hamburger Icon Styles */
+        .hamburger-icon {
+            width: 18px;
+            height: 14px;
+            position: relative;
+            transform: rotate(0deg);
+            transition: .5s ease-in-out;
+            cursor: pointer;
+        }
+
+        .hamburger-icon span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: #fff;
+            border-radius: 2px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: .25s ease-in-out;
+        }
+
+        .hamburger-icon span:nth-child(1) {
+            top: 0px;
+        }
+
+        .hamburger-icon span:nth-child(2), .hamburger-icon span:nth-child(3) {
+            top: 6px;
+        }
+
+        .hamburger-icon span:nth-child(4) {
+            top: 12px;
+        }
+
+        .sidebar.collapsed .hamburger-icon span:nth-child(1) {
+            top: 6px;
+            width: 0%;
+            left: 50%;
+        }
+
+        .sidebar.collapsed .hamburger-icon span:nth-child(2) {
+            transform: rotate(45deg);
+        }
+
+        .sidebar.collapsed .hamburger-icon span:nth-child(3) {
+            transform: rotate(-45deg);
+        }
+
+        .sidebar.collapsed .hamburger-icon span:nth-child(4) {
+            top: 6px;
+            width: 0%;
+            left: 50%;
+        }
+
+        /* Mobile adjustments for sidebar toggle */
+        @media (max-width: 768px) {
+            .sidebar-toggle {
+                top: 15px;
+                right: auto;
+                left: 15px;
+                border: none;
+                background-color: transparent;
+                box-shadow: none;
+            }
+
+            .hamburger-icon span {
+                background: #FF8000;
+            }
+
+            /* Show hamburger only when sidebar is not expanded on mobile */
+            .sidebar:not(.expanded) + .main-content .mobile-hamburger {
+                display: flex;
+            }
+
+            .sidebar.expanded .sidebar-toggle {
+                right: auto;
+                left: 205px;
+            }
+
+            .mobile-hamburger {
+                display: none;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 999;
+            }
         }
 
         .stats-cards {
@@ -343,15 +476,33 @@
 
         @media (max-width: 768px) {
             .sidebar {
-                width: 100%;
-                position: relative;
-                height: auto;
+                width: 0;
+                padding: 20px 0;
+                overflow: hidden;
             }
+
+            .sidebar.collapsed {
+                width: 0;
+            }
+
+            .sidebar.expanded {
+                width: 250px;
+            }
+
             .main-content {
                 margin-left: 0;
             }
-            .stats-cards {
-                grid-template-columns: 1fr;
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle {
+                right: -15px;
+            }
+
+            .sidebar.expanded .sidebar-toggle {
+                right: -15px;
             }
         }
     </style>
@@ -359,6 +510,14 @@
 <body>
     <div class="container">
         <aside class="sidebar">
+            <div class="sidebar-toggle" id="sidebar-toggle">
+                <div class="hamburger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
             <div class="logo-container">
                 <div class="logo">
                     <!-- Logo image can be added here -->
@@ -372,24 +531,32 @@
             </div>
             <nav class="menu">
                 <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    Dashboard
+                    <span>Dashboard</span>
                 </a>
 
                 <a href="{{ route('projects.index') }}" class="menu-item {{ request()->routeIs('projects.*') ? 'active' : '' }}">
-                    Projects
+                    <span>Projects</span>
                 </a>
 
                 <a href="{{ route('inventory.index') }}" class="menu-item {{ request()->routeIs('inventory.*') ? 'active' : '' }}">
-                    Inventory
+                    <span>Inventory</span>
                 </a>
 
                 <a href="{{ route('suppliers.index') }}" class="menu-item {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
-                    Suppliers
+                    <span>Suppliers</span>
                 </a>
             </nav>
         </aside>
 
         <main class="main-content">
+            <div class="mobile-hamburger" id="mobile-hamburger">
+                <div class="hamburger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
             <div class="content-header">
                 <div class="datetime">
                     {{ now()->format('l, F j, Y') }}
@@ -419,27 +586,61 @@
 
     <!-- Scripts -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Toggle dropdown menus
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                if (item.nextElementSibling && item.nextElementSibling.classList.contains('submenu')) {
-                    item.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const submenu = this.nextElementSibling;
-                        const arrow = this.querySelector('.arrow');
+        // Toggle submenu visibility
+        document.querySelectorAll('.menu-item').forEach(item => {
+            if (item.querySelector('.arrow')) {
+                item.addEventListener('click', event => {
+                    const arrow = event.currentTarget.querySelector('.arrow');
+                    arrow.classList.toggle('rotate');
 
-                        if (submenu.style.display === 'block') {
-                            submenu.style.display = 'none';
-                            arrow.classList.remove('rotate');
-                        } else {
-                            submenu.style.display = 'block';
-                            arrow.classList.add('rotate');
-                        }
-                    });
+                    const submenu = event.currentTarget.nextElementSibling;
+                    if (submenu && submenu.classList.contains('submenu')) {
+                        submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+                    }
+                });
+            }
+        });
+
+        // Sidebar toggle functionality
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('expanded');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        });
+
+        // Mobile hamburger menu toggle
+        document.getElementById('mobile-hamburger')?.addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.add('expanded');
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+
+                if (!sidebar.classList.contains('expanded')) {
+                    sidebar.style.width = '0';
                 }
-            });
+            } else {
+                sidebar.classList.remove('expanded');
+                if (sidebar.classList.contains('collapsed')) {
+                    mainContent.classList.add('expanded');
+                }
+            }
         });
     </script>
+
+    @yield('scripts')
 </body>
 </html>

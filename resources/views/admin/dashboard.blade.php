@@ -1,140 +1,334 @@
-@extends('admin.layouts.app')
+@extends('admin.layouts.sidebar')
 
 @section('content')
-<div class="container-fluid">
-    <div class="content-header">
-        <h2>Administrator Dashboard</h2>
-    </div>
+<div class="content-header">
+    <h2>Dashboard</h2>
+</div>
 
-    <div class="stats-cards">
-        <div class="stat-card">
-            <div class="stat-value">{{ $projectsCount }}</div>
-            <div class="stat-label">Total Projects</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ $weeklyIncome }}</div>
-            <div class="stat-label">Weekly Income</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ $monthlyIncome }}</div>
-            <div class="stat-label">Monthly Income</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ $lowStockItems }}</div>
-            <div class="stat-label">Low Stock Items</div>
-        </div>
-    </div>
-
-    <!-- Recent Projects -->
-    <div class="card shadow mt-4">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="card-title">Recent Projects</span>
+<!-- Dashboard Grid Layout -->
+<div class="dashboard-grid">
+    <!-- Four Cards in 1 row -->
+    <div class="row g-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow h-100">
+                <div class="card-header">
+                    <h5 class="card-title">Area of accomplishment</h5>
                 </div>
-                <div>
-                    <a href="{{ route('projects.index') }}" class="view-all">View All</a>
+                <div class="card-body">
+                    <div class="area-chart">
+                        @if(isset($areaAccomplishment))
+                            <div class="chart-container">
+                                <ul class="area-list">
+                                    @foreach($areaAccomplishment as $area => $value)
+                                    <li class="area-item">
+                                        <div class="area-name">{{ ucfirst(str_replace('_', ' ', $area)) }}</div>
+                                        <div class="area-progress">
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: {{ $value }}%"></div>
+                                            </div>
+                                            <div class="progress-value">{{ $value }}%</div>
+                                        </div>
+                                    </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @else
+                            <div class="no-data">No area data available</div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Project Name</th>
-                            <th>Location</th>
-                            <th>Start Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recentProjects as $project)
-                        <tr>
-                            <td>{{ $project->name }}</td>
-                            <td>{{ $project->location }}</td>
-                            <td>{{ $project->start_date }}</td>
-                            <td>
-                                <span class="status-badge status-{{ $project->status }}">{{ ucfirst($project->status) }}</span>
-                            </td>
-                            <td class="action-links">
-                                <a href="{{ route('projects.show', $project->id) }}" class="btn-view" title="View Project">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                                    </svg>
-                                </a>
-                                <a href="{{ route('projects.edit', $project->id) }}" class="btn-edit" title="Edit Project">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center">No projects found</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow h-100">
+                <div class="card-header">
+                    <h5 class="card-title">Total Annual For Week(Sale)</h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="annual-metric">
+                        <div class="metric-value">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow h-100">
+                <div class="card-header">
+                    <h5 class="card-title">Top-Tier Purchase Client</h5>
+                </div>
+                <div class="card-body">
+                    <div class="top-clients">
+                        @if(isset($topClients) && count($topClients) > 0)
+                            <ul class="client-list">
+                                @foreach($topClients as $client)
+                                <li class="client-item">
+                                    <div class="client-name">{{ $client->name }}</div>
+                                    <div class="client-value">{{ $client->total_purchase }}</div>
+                                </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <div class="no-data">No client data available</div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow h-100">
+                <div class="card-header">
+                    <h5 class="card-title">Total Annual For Month(Sale)</h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="annual-metric">
+                        <div class="metric-value">0</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Users Management -->
-    <div class="card shadow mt-4">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="card-title">Users</span>
+    <!-- Calendar Row -->
+    <div class="row g-3 mt-3">
+        <div class="col-12 col-lg-6">
+            <div class="card shadow h-100">
+                <div class="card-header">
+                    <h5 class="card-title">Calendar for schedules</h5>
                 </div>
-                <div>
-                    <a href="{{ route('users.list') }}" class="view-all">View All</a>
+                <div class="card-body">
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <div class="month-year">APRIL 2025</div>
+                        </div>
+                        <table class="calendar-table">
+                            <thead>
+                                <tr>
+                                    <th>S</th>
+                                    <th>M</th>
+                                    <th>T</th>
+                                    <th>W</th>
+                                    <th>T</th>
+                                    <th>F</th>
+                                    <th>S</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>7</td>
+                                    <td>8</td>
+                                    <td>9</td>
+                                    <td>10</td>
+                                    <td>11</td>
+                                    <td>12</td>
+                                </tr>
+                                <tr>
+                                    <td>13</td>
+                                    <td>14</td>
+                                    <td>15</td>
+                                    <td>16</td>
+                                    <td>17</td>
+                                    <td>18</td>
+                                    <td>19</td>
+                                </tr>
+                                <tr>
+                                    <td>20</td>
+                                    <td>21</td>
+                                    <td>22</td>
+                                    <td>23</td>
+                                    <td>24</td>
+                                    <td class="bg-warning text-dark">25</td>
+                                    <td>26</td>
+                                </tr>
+                                <tr>
+                                    <td>27</td>
+                                    <td>28</td>
+                                    <td>29</td>
+                                    <td>30</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Position</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($users->take(5) as $user)
-                        <tr>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ ucfirst($user->position) }}</td>
-                            <td class="action-links">
-                                <a href="{{ route('users.show', $user->id) }}" class="btn-view" title="View User">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                                    </svg>
-                                </a>
-                                <a href="{{ route('users.edit', $user->id) }}" class="btn-edit" title="Edit User">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="text-center">No users found</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <div class="col-12 col-lg-6">
+            <div class="card shadow h-100">
+                <div class="card-header">
+                    <h5 class="card-title">Accomplishment of project</h5>
+                </div>
+                <div class="card-body">
+                    <div class="accomplishment-chart">
+                        <div class="progress-container">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-value">0%</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('styles')
+<style>
+    /* Dashboard-specific styles */
+    .dashboard-grid .card {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        height: 100%;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .dashboard-grid .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-grid .card-header {
+        background-color: #f1f1f1;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 10px 15px;
+    }
+
+    .dashboard-grid .card-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    /* Calendar */
+    .calendar-container {
+        width: 100%;
+    }
+
+    .calendar-header {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .month-year {
+        font-size: 18px;
+    }
+
+    .calendar-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .calendar-table th, .calendar-table td {
+        text-align: center;
+        padding: 8px;
+    }
+
+    .calendar-table td {
+        cursor: pointer;
+    }
+
+    .calendar-table td:hover {
+        background-color: #eaeaea;
+    }
+
+    /* Metrics */
+    .annual-metric {
+        text-align: center;
+    }
+
+    .metric-value {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .progress-container {
+        margin: 20px 0;
+    }
+
+    .progress {
+        height: 20px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background-color: #4e73df;
+        height: 100%;
+    }
+
+    .progress-value {
+        text-align: center;
+        margin-top: 5px;
+        font-weight: bold;
+    }
+
+    .client-list, .area-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .client-item, .area-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .area-item {
+        flex-direction: column;
+    }
+
+    .area-progress {
+        margin-top: 5px;
+    }
+
+    .client-item:last-child, .area-item:last-child {
+        border-bottom: none;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 20px;
+        color: #6c757d;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 991.98px) {
+        .calendar-table th, .calendar-table td {
+            padding: 5px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .calendar-table th, .calendar-table td {
+            padding: 3px;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .calendar-table th, .calendar-table td {
+            padding: 2px;
+            font-size: 0.7rem;
+        }
+    }
+</style>
 @endsection
