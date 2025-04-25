@@ -6,6 +6,7 @@
     <title>{{ config('app.name', 'Rapid Concretech') }}</title>
     <!-- Styles -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -17,23 +18,33 @@
             min-height: 100vh;
             padding-top: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .sidebar-collapsed {
+            padding-left: 0;
+            padding-right: 0;
         }
 
         .sidebar .logo {
             text-align: center;
-            color: #fff;
+            color: #000;
             margin-bottom: 20px;
         }
 
         .sidebar .logo img {
-            max-width: 100px;
+            max-width: 80px;
             margin-bottom: 10px;
         }
 
         .sidebar .nav-link {
-            color: #333;
-            padding: 10px 15px;
-            transition: all 0.3s;
+            color: #000;
+            padding: 6px 15px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .sidebar .nav-link:hover {
@@ -41,19 +52,80 @@
         }
 
         .sidebar .dropdown-menu {
-            background-color: #FFA64D;
+            background-color: transparent;
             border: none;
             width: 100%;
             padding: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            position: static;
+            box-shadow: none;
+            float: none;
+            display: none; /* Hide by default */
+        }
+
+        .sidebar .dropdown-menu.show {
+            display: block; /* Show when active */
         }
 
         .sidebar .dropdown-item {
-            color: #333;
-            padding: 10px 15px 10px 30px;
+            color: #000;
+            padding: 4px 15px 4px 30px;
+            white-space: normal;
         }
 
         .sidebar .dropdown-item:hover {
             background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Remove dropdown arrow from Bootstrap */
+        .sidebar .dropdown-toggle::after {
+            display: none;
+        }
+
+        .sidebar .nav-item {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        /* Custom arrow indicator */
+        .sidebar .arrow {
+            transition: transform 0.3s;
+        }
+
+        .sidebar .arrow.down {
+            transform: rotate(90deg);
+        }
+
+        /* Toggle button for mobile */
+        #sidebarToggle {
+            background-color: #FF8000;
+            border: none;
+            color: #000;
+            padding: 10px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 999;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            #sidebarToggle {
+                display: block;
+            }
+            .sidebar {
+                position: fixed;
+                z-index: 998;
+                left: -100%;
+                width: 250px;
+            }
+            .sidebar.show {
+                left: 0;
+            }
+            .col-md-10 {
+                width: 100%;
+            }
         }
 
         .dashboard-card {
@@ -116,14 +188,19 @@
     @yield('styles')
 </head>
 <body>
+    <!-- Mobile Toggle Button -->
+    <button id="sidebarToggle" class="d-md-none">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-2 sidebar">
+            <div class="col-md-2 sidebar" id="sidebar">
                 <div class="logo">
                     <div class="text-center mb-2">
                         <div class="diamond-logo mb-2">
-                            <img src="{{ asset('logo.png') }}" alt="Rapid Concretech" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22100%22%20height%3D%22100%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18c894ac2fb%20text%20%7B%20fill%3A%23000%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18c894ac2fb%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23F8F9FA%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20transform%3D%22rotate(-45%2C%2030%2C%2030)%22%20x%3D%2230%22%20y%3D%2230%22%3ERapid%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E';">
+                            <img src="{{ asset('images/Rapid.jpg') }}" alt="Rapid Concretech" style="max-width: 80px;">
                         </div>
                     </div>
                     <h4>Rapid Concretech</h4>
@@ -133,74 +210,74 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin_dashboard') }}">Dashboard</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            User Management
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#userManagementMenu">
+                            User Management <i class="fas fa-chevron-right arrow"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('users.index') }}">Manage Users</a></li>
-                            <li><a class="dropdown-item" href="{{ route('users.create') }}">Add User</a></li>
+                        <ul class="dropdown-menu collapse" id="userManagementMenu">
+                            <li><a class="dropdown-item" href="{{ route('users.index') }}">— Manage Users</a></li>
+                            <li><a class="dropdown-item" href="{{ route('users.create') }}">— Add User</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Project Management
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#projectManagementMenu">
+                            Project Management <i class="fas fa-chevron-right arrow"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('projects.create') }}">Project Registration</a></li>
-                            <li><a class="dropdown-item" href="{{ route('projects.index') }}">Projects</a></li>
+                        <ul class="dropdown-menu collapse" id="projectManagementMenu">
+                            <li><a class="dropdown-item" href="{{ route('projects.create') }}">— Project Registration</a></li>
+                            <li><a class="dropdown-item" href="{{ route('projects.index') }}">— Projects</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Billing Transaction
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#billingMenu">
+                            Billing Transaction <i class="fas fa-chevron-right arrow"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('billings.create') }}">Add Billing</a></li>
-                            <li><a class="dropdown-item" href="{{ route('billings.index') }}">Manage Billing</a></li>
+                        <ul class="dropdown-menu collapse" id="billingMenu">
+                            <li><a class="dropdown-item" href="{{ route('billings.create') }}">— Add Billing</a></li>
+                            <li><a class="dropdown-item" href="{{ route('billings.index') }}">— Manage Billing</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Inventory
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#inventoryMenu">
+                            Inventory <i class="fas fa-chevron-right arrow"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('inventory.create') }}">Add Product</a></li>
-                            <li><a class="dropdown-item" href="{{ route('inventory.index') }}">Manage Inventory</a></li>
+                        <ul class="dropdown-menu collapse" id="inventoryMenu">
+                            <li><a class="dropdown-item" href="{{ route('inventory.create') }}">— Add Product</a></li>
+                            <li><a class="dropdown-item" href="{{ route('inventory.index') }}">— Manage Inventory</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Suppliers
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#suppliersMenu">
+                            Suppliers <i class="fas fa-chevron-right arrow"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('suppliers.create') }}">Add Supplier</a></li>
-                            <li><a class="dropdown-item" href="{{ route('suppliers.index') }}">Manage Suppliers</a></li>
+                        <ul class="dropdown-menu collapse" id="suppliersMenu">
+                            <li><a class="dropdown-item" href="{{ route('suppliers.create') }}">— Add Supplier</a></li>
+                            <li><a class="dropdown-item" href="{{ route('suppliers.index') }}">— Manage Suppliers</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Customer Data
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#customerMenu">
+                            Customer Data <i class="fas fa-chevron-right arrow"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('customers.create') }}">Add Customer</a></li>
-                            <li><a class="dropdown-item" href="{{ route('customers.index') }}">Manage Customer</a></li>
+                        <ul class="dropdown-menu collapse" id="customerMenu">
+                            <li><a class="dropdown-item" href="{{ route('customers.create') }}">— Add Customer</a></li>
+                            <li><a class="dropdown-item" href="{{ route('customers.index') }}">— Manage Customer</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Reports
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#reportsMenu">
+                            Reports <i class="fas fa-chevron-right arrow"></i>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('reports.weekly') }}">Weekly Reports</a></li>
-                            <li><a class="dropdown-item" href="{{ route('reports.monthly') }}">Monthly Reports</a></li>
+                        <ul class="dropdown-menu collapse" id="reportsMenu">
+                            <li><a class="dropdown-item" href="{{ route('reports.weekly') }}">— Weekly Reports</a></li>
+                            <li><a class="dropdown-item" href="{{ route('reports.monthly') }}">— Monthly Reports</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
 
             <!-- Main Content -->
-            <div class="col-md-10">
+            <div class="col-md-10" id="content">
                 <div class="container py-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>@yield('title')</h2>
@@ -209,7 +286,7 @@
                             <div class="dropdown user-dropdown">
                                 <button class="user-dropdown-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     <span>User</span>
-                                    <i class="fa fa-user-circle"></i>
+                                    <i class="fas fa-user-circle"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="#">Profile</a></li>
@@ -233,6 +310,41 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle arrow direction and add active class
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    const arrow = this.querySelector('.arrow');
+                    arrow.classList.toggle('down');
+                });
+            });
+
+            // Mobile sidebar toggle
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                });
+            }
+
+            // Close sidebar when clicking outside (mobile only)
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768) {
+                    const isClickInsideSidebar = sidebar.contains(event.target);
+                    const isClickOnToggle = sidebarToggle.contains(event.target);
+
+                    if (!isClickInsideSidebar && !isClickOnToggle && sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                    }
+                }
+            });
+        });
+    </script>
     @yield('scripts')
 </body>
 </html>

@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         // Create default admin user
         User::create([
             'name' => 'Admin User',
-            'email' => 'admin@rapidconcretech.com',
+            'email' => 'admin@gmail.com',
             'password' => Hash::make('password123'),
             'position' => 'admin',
         ]);
@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         // Create additional role-based users
         DB::table('users')->insert([
             'name' => 'Project Manager',
-            'email' => 'pm@rapidconcretech.com',
+            'email' => 'pm@gmail.com.com',
             'password' => Hash::make('password123'),
             'position' => 'project-manager',
             'created_at' => Carbon::now(),
@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'Accountant',
-            'email' => 'accountant@rapidconcretech.com',
+            'email' => 'accountant@gmail.com',
             'password' => Hash::make('password123'),
             'position' => 'accountant',
             'created_at' => Carbon::now(),
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'Inventory Staff',
-            'email' => 'inventory@rapidconcretech.com',
+            'email' => 'inventory@gmail.com',
             'password' => Hash::make('password123'),
             'position' => 'inventory-staff',
             'created_at' => Carbon::now(),
@@ -53,7 +53,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'Supplier',
-            'email' => 'supplier@rapidconcretech.com',
+            'email' => 'supplier@gmail.com',
             'password' => Hash::make('password123'),
             'position' => 'supplier',
             'created_at' => Carbon::now(),
