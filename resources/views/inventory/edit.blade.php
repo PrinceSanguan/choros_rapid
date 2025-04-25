@@ -121,7 +121,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="input-group">
-                                    <span class="input-group-text">₦</span>
+                                    <span class="input-group-text">$</span>
                                     <input type="number" step="0.01" min="0"
                                         class="form-control @error('buying_price') is-invalid @enderror"
                                         name="buying_price" value="{{ old('buying_price', $inventory->buying_price) }}"
@@ -135,7 +135,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="input-group">
-                                    <span class="input-group-text">₦</span>
+                                    <span class="input-group-text">$</span>
                                     <input type="number" step="0.01" min="0"
                                         class="form-control @error('selling_price') is-invalid @enderror"
                                         name="selling_price" value="{{ old('selling_price', $inventory->selling_price) }}"

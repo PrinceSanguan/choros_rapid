@@ -45,7 +45,7 @@ class Inventory extends Model
      */
     public function getFormattedBuyingPriceAttribute()
     {
-        return '₦' . number_format($this->buying_price, 2);
+        return '$' . number_format($this->buying_price, 2);
     }
 
     /**
@@ -53,7 +53,7 @@ class Inventory extends Model
      */
     public function getFormattedSellingPriceAttribute()
     {
-        return '₦' . number_format($this->selling_price, 2);
+        return '$' . number_format($this->selling_price, 2);
     }
 
     /**

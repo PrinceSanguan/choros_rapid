@@ -27,8 +27,8 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        $inventory = Inventory::latest()->paginate(10);
-        return view('inventory.index', compact('inventory'));
+        $inventories = Inventory::latest()->paginate(10);
+        return view('inventory.index', compact('inventories'));
     }
 
     /**
@@ -59,7 +59,7 @@ class InventoryController extends Controller
             'buying_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10048',
         ]);
 
         // Handle photo upload
@@ -116,7 +116,7 @@ class InventoryController extends Controller
             'buying_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10048',
         ]);
 
         // Handle photo upload

@@ -60,7 +60,7 @@
                                             <label for="photo" class="form-label">Product Photo</label>
                                             <input type="file" class="form-control @error('photo') is-invalid @enderror"
                                                 id="photo" name="photo" accept="image/*">
-                                            <small class="form-text text-muted">Upload a clear image of the product (Max: 2MB)</small>
+                                            <small class="form-text text-muted">Upload a clear image of the product (Max: 10MB)</small>
                                             @error('photo')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror

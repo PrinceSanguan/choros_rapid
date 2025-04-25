@@ -47,18 +47,20 @@
                                     <td>{{ $item->id }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            @if($item->photo)
-                                                <img src="{{ asset('storage/' . $item->photo) }}"
-                                                    alt="{{ $item->product_title }}"
-                                                    class="img-thumbnail me-2"
-                                                    style="width: 40px; height: 40px; object-fit: cover;">
-                                            @else
-                                                <div class="bg-light rounded me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 40px; height: 40px;">
-                                                    <i class="fa fa-image text-muted"></i>
-                                                </div>
-                                            @endif
-                                            {{ $item->product_title }}
+                                            <div class="me-2" style="width: 40px; height: 40px; overflow: hidden;">
+                                                @if($item->photo)
+                                                    <img src="{{ asset('storage/' . $item->photo) }}"
+                                                        alt="{{ $item->product_title }}"
+                                                        style="width: 100%; height: 100%; object-fit: cover;"
+                                                        class="rounded">
+                                                @else
+                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                                        style="width: 100%; height: 100%;">
+                                                        <i class="fa fa-image text-muted"></i>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <span>{{ $item->product_title }}</span>
                                         </div>
                                     </td>
                                     <td>
@@ -72,8 +74,8 @@
                                             <span class="badge bg-danger">Out of stock</span>
                                         @endif
                                     </td>
-                                    <td>{{ $item->formatted_buying_price }}</td>
-                                    <td>{{ $item->formatted_selling_price }}</td>
+                                    <td>{!! str_replace('$', '<span class="naira-symbol">$</span>', $item->formatted_buying_price) !!}</td>
+                                    <td>{!! str_replace('$', '<span class="naira-symbol">$</span>', $item->formatted_selling_price) !!}</td>
                                     <td>{{ $item->created_at->format('M d, Y') }}</td>
                                     <td>
                                         <a href="{{ route('inventory.show', $item) }}" class="btn btn-sm btn-info">
@@ -139,4 +141,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    .naira-symbol {
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+    }
+</style>
 @endsection
