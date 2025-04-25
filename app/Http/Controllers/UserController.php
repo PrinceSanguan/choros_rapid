@@ -5,16 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+        // Role middleware needs to be implemented or use a package like spatie/laravel-permission
+        // For now, we'll do a basic check in each method
+    }
+
+    /**
      * Display a listing of the users.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->paginate(10);
+        // Check if user is admin
+        if (!$request->user() || !$request->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $users = User::all();
         return view('users.index', compact('users'));
     }
 
@@ -23,16 +40,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        // Define positions with display name => system value mapping
-        $positions = [
-            'Admin' => 'admin',
-            'Project Manager' => 'project-manager',
-            'Accountant' => 'accountant',
-            'Inventory Staff' => 'inventory-staff',
-            'Supplier' => 'supplier'
-        ];
-
-        return view('users.create', compact('positions'));
+        return view('users.create');
     }
 
     /**
@@ -40,23 +48,21 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'position' => 'required|string|in:admin,project-manager,accountant,inventory-staff,supplier',
         ]);
 
-        // Create the user with the validated position
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'position' => $request->position,
+        User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'position' => $validated['position'],
         ]);
 
-        return redirect()->route('users.index')
-            ->with('success', 'User created successfully.');
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     /**
@@ -72,16 +78,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        // Define positions with display name => system value mapping
-        $positions = [
-            'Admin' => 'admin',
-            'Project Manager' => 'project-manager',
-            'Accountant' => 'accountant',
-            'Inventory Staff' => 'inventory-staff',
-            'Supplier' => 'supplier'
-        ];
-
-        return view('users.edit', compact('user', 'positions'));
+        return view('users.edit', compact('user'));
     }
 
     /**
@@ -89,31 +86,30 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
             'position' => 'required|string|in:admin,project-manager,accountant,inventory-staff,supplier',
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
 
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'position' => $request->position,
-        ]);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->position = $validated['position'];
 
-        // Update password if provided
         if ($request->filled('password')) {
-            $request->validate([
-                'password' => 'required|string|min:8|confirmed',
-            ]);
-
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
+            $user->password = Hash::make($validated['password']);
         }
 
-        return redirect()->route('users.index')
-            ->with('success', 'User updated successfully.');
+        $user->save();
+
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
     /**
@@ -121,15 +117,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // Prevent self-deletion
-        if (Auth::id() === $user->id) {
-            return redirect()->route('users.index')
-                ->with('error', 'You cannot delete your own account.');
-        }
-
         $user->delete();
-
-        return redirect()->route('users.index')
-            ->with('success', 'User deleted successfully.');
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }

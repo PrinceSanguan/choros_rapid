@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -41,65 +41,64 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'last_login_at' => 'datetime',
     ];
 
     /**
-     * The roles that belong to the user
+     * Determine if the user is an admin.
+     *
+     * @return bool
      */
-    public function roles()
+    public function isAdmin()
     {
-        return $this->belongsToMany(Role::class);
+        return $this->position === 'admin';
     }
 
     /**
-     * Check if user has the specified position
+     * Determine if the user is a project manager.
+     *
+     * @return bool
      */
-    public function hasPosition($position)
+    public function isProjectManager()
     {
-        return $this->position === $position;
+        return $this->position === 'project-manager';
     }
 
     /**
-     * Check if user has the specified role
-     * This is an alias of hasPosition for consistency with role middleware
+     * Determine if the user is an accountant.
+     *
+     * @return bool
      */
-    public function hasRole($role)
+    public function isAccountant()
     {
-        // Handle multiple roles check (e.g., 'admin|project-manager')
-        if (strpos($role, '|') !== false) {
-            $roles = explode('|', $role);
-            foreach ($roles as $r) {
-                if (strtolower($this->position) === strtolower($r)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        return strtolower($this->position) === strtolower($role);
+        return $this->position === 'accountant';
     }
 
     /**
-     * Get the projects managed by the user
+     * Determine if the user is inventory staff.
+     *
+     * @return bool
+     */
+    public function isInventoryStaff()
+    {
+        return $this->position === 'inventory-staff';
+    }
+
+    /**
+     * Determine if the user is a supplier.
+     *
+     * @return bool
+     */
+    public function isSupplier()
+    {
+        return $this->position === 'supplier';
+    }
+
+    /**
+     * Get the projects managed by this user.
      */
     public function managedProjects()
     {
         return $this->hasMany(Project::class, 'manager_id');
-    }
-
-    /**
-     * Get all billing transactions created by the user
-     */
-    public function billingTransactions()
-    {
-        return $this->hasMany(BillingTransaction::class, 'created_by');
-    }
-
-    /**
-     * Get all inventory items added by the user
-     */
-    public function inventoryItems()
-    {
-        return $this->hasMany(Inventory::class, 'added_by');
     }
 }

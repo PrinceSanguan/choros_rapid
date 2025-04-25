@@ -11,15 +11,13 @@ class Project extends Model
 
     protected $fillable = [
         'name',
-        'location',
-        'contractor',
-        'project_size',
+        'description',
+        'customer_id',
+        'manager_id',
+        'status',
         'start_date',
         'end_date',
         'budget',
-        'description',
-        'status',
-        'manager_id',
     ];
 
     protected $casts = [
@@ -28,11 +26,25 @@ class Project extends Model
         'budget' => 'decimal:2',
     ];
 
+    /**
+     * Get the customer that owns the project.
+     */
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * Get the manager that oversees the project.
+     */
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
     }
 
+    /**
+     * Get the billing transactions for the project.
+     */
     public function billingTransactions()
     {
         return $this->hasMany(BillingTransaction::class);

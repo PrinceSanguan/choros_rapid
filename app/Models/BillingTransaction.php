@@ -10,38 +10,34 @@ class BillingTransaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'invoice_number',
         'project_id',
         'customer_id',
+        'invoice_number',
         'amount',
         'status',
+        'payment_method',
+        'description',
         'due_date',
-        'notes',
-        'created_by',
     ];
 
     protected $casts = [
-        'due_date' => 'date',
         'amount' => 'decimal:2',
+        'due_date' => 'date',
     ];
 
+    /**
+     * Get the project that owns the billing transaction.
+     */
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * Get the customer that owns the billing transaction.
+     */
     public function customer()
     {
         return $this->belongsTo(Customer::class);
-    }
-
-    public function createdBy()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(BillingItem::class);
     }
 }

@@ -3,6 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -11,10 +15,49 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            RoleSeeder::class,
-            UserSeeder::class,
-            ProductCategorySeeder::class,
+        // Create default admin user
+        User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@rapidconcretech.com',
+            'password' => Hash::make('password123'),
+            'position' => 'admin',
+        ]);
+
+        // Create additional role-based users
+        DB::table('users')->insert([
+            'name' => 'Project Manager',
+            'email' => 'pm@rapidconcretech.com',
+            'password' => Hash::make('password123'),
+            'position' => 'project-manager',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Accountant',
+            'email' => 'accountant@rapidconcretech.com',
+            'password' => Hash::make('password123'),
+            'position' => 'accountant',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Inventory Staff',
+            'email' => 'inventory@rapidconcretech.com',
+            'password' => Hash::make('password123'),
+            'position' => 'inventory-staff',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Supplier',
+            'email' => 'supplier@rapidconcretech.com',
+            'password' => Hash::make('password123'),
+            'position' => 'supplier',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
     }
 }

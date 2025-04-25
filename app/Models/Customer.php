@@ -14,20 +14,21 @@ class Customer extends Model
         'email',
         'phone',
         'address',
-        'description',
-        'is_active',
-        'added_by',
+        'contact_person',
+        'company_name',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
-
-    public function addedBy()
+    /**
+     * Get the projects for the customer.
+     */
+    public function projects()
     {
-        return $this->belongsTo(User::class, 'added_by');
+        return $this->hasMany(Project::class);
     }
 
+    /**
+     * Get the billing transactions for the customer.
+     */
     public function billingTransactions()
     {
         return $this->hasMany(BillingTransaction::class);

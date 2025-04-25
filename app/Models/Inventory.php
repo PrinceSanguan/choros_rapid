@@ -10,29 +10,25 @@ class Inventory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_title',
-        'category_id',
-        'in_stock',
-        'buying_price',
-        'selling_price',
+        'name',
         'description',
-        'photo',
-        'added_by',
+        'supplier_id',
+        'category',
+        'in_stock',
+        'unit',
+        'unit_price',
+        'reorder_level',
     ];
 
     protected $casts = [
-        'in_stock' => 'integer',
-        'buying_price' => 'decimal:2',
-        'selling_price' => 'decimal:2',
+        'unit_price' => 'decimal:2',
     ];
 
-    public function category()
+    /**
+     * Get the supplier that provides this inventory item.
+     */
+    public function supplier()
     {
-        return $this->belongsTo(ProductCategory::class, 'category_id');
-    }
-
-    public function addedBy()
-    {
-        return $this->belongsTo(User::class, 'added_by');
+        return $this->belongsTo(Supplier::class);
     }
 }

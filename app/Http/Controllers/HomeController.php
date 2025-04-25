@@ -21,7 +21,16 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        // Ensure users are authenticated
+        // Ensure users are authenticated for most methods, but not the welcome page
+        $this->middleware('auth')->except('welcome');
+    }
+
+    /**
+     * Show the welcome page for guests
+     */
+    public function welcome()
+    {
+        return view('welcome');
     }
 
     /**
@@ -31,6 +40,10 @@ class HomeController extends Controller
      */
     public function index()
     {
+        if (!Auth::check()) {
+            return $this->welcome();
+        }
+
         $user = Auth::user();
         $position = $user->position;
 
@@ -39,12 +52,14 @@ class HomeController extends Controller
                 return $this->admin_dashboard();
             case 'project-manager':
                 return $this->projectManagerDashboard();
+            case 'accountant':
+                return $this->accountantDashboard();
             case 'supplier':
                 return $this->supplierDashboard();
             case 'inventory-staff':
                 return $this->inventoryDashboard();
             default:
-                return view('welcome');
+                return $this->welcome();
         }
     }
 
@@ -114,7 +129,9 @@ class HomeController extends Controller
             'monthlyAnnualSale',
             'projectAccomplishment',
             'areaAccomplishment',
-            'topClients'
+            'topClients',
+            'totalProjects',
+            'completedProjects'
         ));
     }
 
@@ -139,13 +156,109 @@ class HomeController extends Controller
         $ongoingProjects = Project::where('manager_id', $user->id)->where('status', 'ongoing')->count();
         $completedProjects = Project::where('manager_id', $user->id)->where('status', 'completed')->count();
 
+        // Additional dashboard data for project manager
+        $weeklyAnnualSale = BillingTransaction::whereHas('project', function($query) use ($user) {
+                $query->where('manager_id', $user->id);
+            })
+            ->where('status', 'paid')
+            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->sum('amount');
+
+        $monthlyAnnualSale = BillingTransaction::whereHas('project', function($query) use ($user) {
+                $query->where('manager_id', $user->id);
+            })
+            ->where('status', 'paid')
+            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->sum('amount');
+
+        // Project accomplishment for this manager
+        $projectAccomplishment = $projectsCount > 0 ? round(($completedProjects / $projectsCount) * 100) : 0;
+
+        // Area accomplishment for project manager
+        $areaAccomplishment = [
+            'planning' => 80,
+            'execution' => 75,
+            'team_management' => 85,
+            'client_satisfaction' => 90
+        ];
+
+        // Top clients for this project manager
+        $topClients = Customer::join('projects as p', 'customers.id', '=', 'p.customer_id')
+            ->where('p.manager_id', $user->id)
+            ->select('customers.name', DB::raw('COUNT(p.id) as total_projects'))
+            ->groupBy('customers.id', 'customers.name')
+            ->orderBy('total_projects', 'desc')
+            ->take(5)
+            ->get();
+
         return view('project_manager.dashboard', compact(
             'user',
             'projects',
             'projectsCount',
             'pendingProjects',
             'ongoingProjects',
-            'completedProjects'
+            'completedProjects',
+            'weeklyAnnualSale',
+            'monthlyAnnualSale',
+            'projectAccomplishment',
+            'areaAccomplishment',
+            'topClients'
+        ));
+    }
+
+    /**
+     * Display the accountant dashboard
+     */
+    public function accountantDashboard()
+    {
+        // Get data for accountant dashboard
+        $weeklyIncome = BillingTransaction::where('status', 'paid')
+            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->sum('amount');
+
+        $monthlyIncome = BillingTransaction::where('status', 'paid')
+            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->sum('amount');
+
+        $pendingPayments = BillingTransaction::where('status', 'pending')->count();
+        $recentTransactions = BillingTransaction::latest()->take(5)->get();
+
+        // Additional dashboard data
+        $weeklyAnnualSale = $weeklyIncome;
+        $monthlyAnnualSale = $monthlyIncome;
+
+        // Project accomplishment from financial perspective
+        $totalBilled = BillingTransaction::where('status', 'paid')->sum('amount');
+        $totalProjectValue = Project::sum('budget');
+        $projectAccomplishment = $totalProjectValue > 0 ? round(($totalBilled / $totalProjectValue) * 100) : 0;
+
+        // Area accomplishment for accountant
+        $areaAccomplishment = [
+            'invoicing' => 95,
+            'collections' => 82,
+            'reporting' => 88,
+            'budget_management' => 75
+        ];
+
+        // Top clients by payment
+        $topClients = Customer::join('billing_transactions as bt', 'customers.id', '=', 'bt.customer_id')
+            ->select('customers.name', DB::raw('SUM(bt.amount) as total_paid'))
+            ->where('bt.status', 'paid')
+            ->groupBy('customers.id', 'customers.name')
+            ->orderBy('total_paid', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('accountant.dashboard', compact(
+            'weeklyIncome',
+            'monthlyIncome',
+            'pendingPayments',
+            'recentTransactions',
+            'weeklyAnnualSale',
+            'monthlyAnnualSale',
+            'projectAccomplishment',
+            'areaAccomplishment',
+            'topClients'
         ));
     }
 

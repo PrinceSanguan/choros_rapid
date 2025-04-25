@@ -11,20 +11,27 @@ class Supplier extends Model
 
     protected $fillable = [
         'name',
+        'contact_person',
         'email',
         'phone',
         'address',
-        'description',
-        'is_active',
-        'added_by',
+        'company_name',
+        'user_id',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
-
-    public function addedBy()
+    /**
+     * Get the inventory items supplied by this supplier.
+     */
+    public function inventoryItems()
     {
-        return $this->belongsTo(User::class, 'added_by');
+        return $this->hasMany(Inventory::class);
+    }
+
+    /**
+     * Get the user associated with this supplier.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
