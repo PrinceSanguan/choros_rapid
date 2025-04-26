@@ -75,10 +75,10 @@ class HomeController extends Controller
         $projectsCount = Project::count();
         $recentProjects = Project::latest()->take(5)->get();
         $weeklyIncome = BillingTransaction::where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->sum('amount');
         $monthlyIncome = BillingTransaction::where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->sum('amount');
         $lowStockItems = Inventory::where('in_stock', '<', 10)->count();
         $topCustomers = Customer::withCount('billingTransactions')
@@ -88,10 +88,10 @@ class HomeController extends Controller
 
         // New data for the enhanced dashboard
         $weeklyAnnualSale = BillingTransaction::where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->sum('amount');
         $monthlyAnnualSale = BillingTransaction::where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->sum('amount');
 
         // Project accomplishment calculation
@@ -164,14 +164,14 @@ class HomeController extends Controller
                 $query->where('manager_id', $user->id);
             })
             ->where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->sum('amount');
 
         $monthlyAnnualSale = BillingTransaction::whereHas('project', function($query) use ($user) {
                 $query->where('manager_id', $user->id);
             })
             ->where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->sum('amount');
 
         // Project accomplishment for this manager
@@ -216,11 +216,11 @@ class HomeController extends Controller
     {
         // Get data for accountant dashboard
         $weeklyIncome = BillingTransaction::where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->sum('amount');
 
         $monthlyIncome = BillingTransaction::where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->sum('amount');
 
         $pendingPayments = BillingTransaction::where('status', 'pending')->count();
@@ -275,19 +275,19 @@ class HomeController extends Controller
         $recentProjects = Project::latest()->take(5)->get();
         $inventory = Inventory::all();
         $weeklyIncome = BillingTransaction::where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->sum('amount');
         $monthlyIncome = BillingTransaction::where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->sum('amount');
         $lowStockItems = Inventory::where('in_stock', '<', 10)->count();
 
         // New data for enhanced dashboard
         $weeklyAnnualSale = BillingTransaction::where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->sum('amount');
         $monthlyAnnualSale = BillingTransaction::where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->sum('amount');
 
         // Project accomplishment - supplier perspective
@@ -342,10 +342,10 @@ class HomeController extends Controller
 
         // New data for enhanced dashboard
         $weeklyAnnualSale = BillingTransaction::where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->sum('amount');
         $monthlyAnnualSale = BillingTransaction::where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->sum('amount');
 
         // Project accomplishment - inventory perspective

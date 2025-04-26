@@ -18,18 +18,18 @@ class ReportController extends Controller
     {
         // Get weekly data for reports
         $weeklyIncome = BillingTransaction::where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->sum('amount');
 
-        $weeklyProjects = Project::whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+        $weeklyProjects = Project::whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->count();
 
-        $weeklyNewCustomers = Customer::whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+        $weeklyNewCustomers = Customer::whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->count();
 
         // Get daily data for current week
         $dailyStats = BillingTransaction::where('status', 'paid')
-            ->whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(WEEK FROM created_at) = EXTRACT(WEEK FROM NOW())")
             ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(amount) as total'))
             ->groupBy('date')
             ->get();
