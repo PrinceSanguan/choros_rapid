@@ -2,6 +2,10 @@
 
 @section('title', 'Admin Dashboard')
 
+@php
+use Illuminate\Support\Str;
+@endphp
+
 @section('content')
 <div class="container-fluid px-0">
     <div class="row mb-4">
@@ -48,8 +52,7 @@
                                         <td class="{{ isset($calendarData[$day]) && count($calendarData[$day]) > 0 ? 'has-events' : '' }}">
                                             {{ $day }}
                                             @if (isset($calendarData[$day]) && count($calendarData[$day]) > 0)
-                                                <div class="event-indicator" data-toggle="tooltip" data-html="true"
-                                                    title="@foreach($calendarData[$day] as $event){{ $event->title }}<br>@endforeach">
+                                                <div class="event-indicator" data-day="{{ $day }}">
                                                     <span>{{ count($calendarData[$day]) }}</span>
                                                 </div>
                                             @endif
@@ -139,6 +142,55 @@
         </div>
     </div>
 </div>
+
+<!-- Calendar Event Modals -->
+@if(isset($calendarData))
+    @foreach($calendarData as $day => $events)
+        @if(count($events) > 0)
+            <div class="calendar-event-modal" id="event-modal-{{ $day }}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5>Events on {{ $monthName ?? 'Current Month' }} {{ $day }}</h5>
+                        <button type="button" class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        @foreach($events as $event)
+                            <div class="event-item">
+                                <h6 class="event-title">{{ $event->title }}</h6>
+                                <div class="event-detail">
+                                    @if($event->project)
+                                        <p><strong>Project:</strong> {{ $event->project->name }}</p>
+                                    @endif
+                                    <p><strong>Time:</strong> {{ date('h:i A', strtotime($event->start_date)) }}</p>
+                                    @if($event->description)
+                                        <p><strong>Description:</strong> {{ $event->description }}</p>
+                                    @endif
+                                    @if($event->project && $event->project->location)
+                                        <p><strong>Location:</strong> {{ $event->project->location }}</p>
+                                    @endif
+                                    @if($event->project && $event->project->contractor)
+                                        <p><strong>Contractor:</strong> {{ $event->project->contractor }}</p>
+                                    @endif
+                                    <p><strong>Status:</strong>
+                                        <span class="badge {{ $event->status == 'completed' ? 'bg-success' : ($event->status == 'cancelled' ? 'bg-danger' : 'bg-warning') }}">
+                                            {{ ucfirst($event->status) }}
+                                        </span>
+                                    </p>
+                                    <div class="mt-2">
+                                        <a href="{{ route('schedules.show', $event->id) }}" class="btn btn-sm btn-info">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                            @if(!$loop->last)
+                                <hr>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
+@endif
 @endsection
 
 @section('styles')
@@ -217,6 +269,94 @@
         cursor: pointer;
     }
 
+    /* Calendar Event Modal */
+    .calendar-event-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .calendar-event-modal.active {
+        opacity: 1;
+        visibility: visible;
+        display: flex;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        border-radius: 5px;
+        overflow: hidden;
+        width: 90%;
+        max-width: 450px;
+        max-height: 80vh;
+        margin: 0 auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .modal-header {
+        background-color: #FF8000;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h5 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .close-modal {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .modal-body {
+        padding: 20px;
+        max-height: calc(80vh - 60px);
+        overflow-y: auto;
+    }
+
+    .event-item {
+        margin-bottom: 15px;
+    }
+
+    .event-title {
+        color: #333;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .event-detail p {
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .event-detail .btn {
+        margin-top: 5px;
+    }
+
     /* Financial stats styling */
     .annual-stats {
         font-size: 28px;
@@ -279,15 +419,89 @@
         .dashboard-card {
             margin-bottom: 20px;
         }
+
+        .modal-content {
+            width: 95%;
+            max-height: 85vh;
+        }
+
+        .modal-body {
+            padding: 15px;
+        }
+
+        .event-title {
+            font-size: 16px;
+        }
+
+        .event-detail p {
+            font-size: 13px;
+        }
     }
 </style>
 @endsection
 
 @section('scripts')
 <script>
-    // Initialize tooltips for calendar events
-    $(function() {
-        $('[data-toggle="tooltip"]').tooltip();
+    // Modal functionality for calendar events
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all event indicators
+        const eventIndicators = document.querySelectorAll('.event-indicator');
+        const modals = document.querySelectorAll('.calendar-event-modal');
+        const closeButtons = document.querySelectorAll('.close-modal');
+
+        // For detecting if we're on mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        // Show modal on click/hover depending on device
+        eventIndicators.forEach(indicator => {
+            const day = indicator.getAttribute('data-day');
+            const modal = document.getElementById(`event-modal-${day}`);
+
+            if (modal) {
+                // Use click for mobile and hover for desktop
+                if (isMobile) {
+                    indicator.addEventListener('click', function(e) {
+                        showModal(modal);
+                        e.stopPropagation();
+                    });
+                } else {
+                    indicator.addEventListener('mouseenter', function() {
+                        showModal(modal);
+                    });
+                }
+            }
+        });
+
+        // Function to show modal
+        function showModal(modal) {
+            // Hide all other modals first
+            modals.forEach(m => {
+                m.classList.remove('active');
+            });
+
+            // Show this modal
+            modal.classList.add('active');
+        }
+
+        // Close modal when clicking the close button
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                this.closest('.calendar-event-modal').classList.remove('active');
+                e.stopPropagation();
+            });
+        });
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            modals.forEach(modal => {
+                if (modal.classList.contains('active')) {
+                    const modalContent = modal.querySelector('.modal-content');
+                    if (!modalContent.contains(e.target)) {
+                        modal.classList.remove('active');
+                    }
+                }
+            });
+        });
     });
 </script>
 @endsection

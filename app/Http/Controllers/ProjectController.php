@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -48,11 +50,32 @@ class ProjectController extends Controller
             'start_date' => 'nullable|date',
             'project_manager' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'status' => 'nullable|string|in:pending,ongoing,completed',
+            'budget' => 'nullable|numeric',
+            'customer_id' => 'nullable|exists:customers,id',
+            'manager_id' => 'nullable|exists:users,id',
         ]);
 
+        // Create the project
         $project = Project::create($validated);
 
-        return redirect()->route('projects.index')->with('success', 'Project created successfully.');
+        // Create a schedule for this project
+        $startDate = $validated['start_date'] ?? now();
+
+        $scheduleData = [
+            'title' => $validated['name'],
+            'description' => $validated['description'] ?? "Project at {$validated['location']}",
+            'start_date' => $startDate,
+            'end_date' => null, // Can be set later
+            'status' => 'scheduled',
+            'project_id' => $project->id,
+            'user_id' => Auth::id(),
+        ];
+
+        // Create the schedule
+        Schedule::create($scheduleData);
+
+        return redirect()->route('projects.index')->with('success', 'Project created successfully and added to calendar.');
     }
 
     /**
@@ -85,11 +108,33 @@ class ProjectController extends Controller
             'start_date' => 'nullable|date',
             'project_manager' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'status' => 'nullable|string|in:pending,ongoing,completed',
+            'budget' => 'nullable|numeric',
+            'customer_id' => 'nullable|exists:customers,id',
+            'manager_id' => 'nullable|exists:users,id',
         ]);
 
         $project->update($validated);
 
-        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
+        // Update the associated schedule if it exists, or create a new one
+        $schedule = Schedule::where('project_id', $project->id)->first();
+
+        $scheduleData = [
+            'title' => $validated['name'],
+            'description' => $validated['description'] ?? "Project at {$validated['location']}",
+            'start_date' => $validated['start_date'] ?? now(),
+            'status' => ($validated['status'] == 'completed') ? 'completed' : 'scheduled',
+        ];
+
+        if ($schedule) {
+            $schedule->update($scheduleData);
+        } else {
+            $scheduleData['project_id'] = $project->id;
+            $scheduleData['user_id'] = Auth::id();
+            Schedule::create($scheduleData);
+        }
+
+        return redirect()->route('projects.index')->with('success', 'Project updated successfully and calendar updated.');
     }
 
     /**
@@ -97,6 +142,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        // Schedule will be automatically deleted due to cascade delete in migration
         $project->delete();
         return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');
     }
