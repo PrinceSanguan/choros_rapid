@@ -49,19 +49,19 @@ class ReportController extends Controller
     {
         // Get monthly data for reports
         $monthlyIncome = BillingTransaction::where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->sum('amount');
 
-        $monthlyProjects = Project::whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+        $monthlyProjects = Project::whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->count();
 
-        $monthlyNewCustomers = Customer::whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
+        $monthlyNewCustomers = Customer::whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
             ->count();
 
         // Get weekly data for current month
         $weeklyStats = BillingTransaction::where('status', 'paid')
-            ->whereRaw('MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())')
-            ->select(DB::raw('WEEK(created_at) as week'), DB::raw('SUM(amount) as total'))
+            ->whereRaw("EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM NOW()) AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM NOW())")
+            ->select(DB::raw("EXTRACT(WEEK FROM created_at) as week"), DB::raw('SUM(amount) as total'))
             ->groupBy('week')
             ->get();
 
