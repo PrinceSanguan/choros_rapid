@@ -53,4 +53,22 @@ class Project extends Model
     {
         return $this->hasMany(BillingTransaction::class);
     }
+
+    /**
+     * Get the schedules for the project.
+     */
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
+    /**
+     * Get inventory items associated with the project.
+     */
+    public function inventory()
+    {
+        return $this->belongsToMany(Inventory::class, 'project_inventory')
+            ->withPivot('quantity', 'unit_price')
+            ->withTimestamps();
+    }
 }

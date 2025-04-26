@@ -101,4 +101,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Project::class, 'manager_id');
     }
+
+    /**
+     * Get the schedules created by this user.
+     */
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }

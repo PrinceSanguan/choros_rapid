@@ -16,7 +16,7 @@
             <div class="dashboard-card h-100">
                 <h5>Calendar for schedules</h5>
                 <div class="calendar-header">
-                    APRIL 2025
+                    {{ $monthName ?? 'CURRENT MONTH' }}
                 </div>
                 <table class="calendar-table">
                     <thead>
@@ -31,51 +31,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>3</td>
-                            <td>4</td>
-                            <td>5</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>7</td>
-                            <td>8</td>
-                            <td>9</td>
-                            <td>10</td>
-                            <td>11</td>
-                            <td>12</td>
-                        </tr>
-                        <tr>
-                            <td>13</td>
-                            <td>14</td>
-                            <td>15</td>
-                            <td>16</td>
-                            <td>17</td>
-                            <td>18</td>
-                            <td>19</td>
-                        </tr>
-                        <tr>
-                            <td>20</td>
-                            <td>21</td>
-                            <td>22</td>
-                            <td>23</td>
-                            <td>24</td>
-                            <td>25</td>
-                            <td>26</td>
-                        </tr>
-                        <tr>
-                            <td>27</td>
-                            <td>28</td>
-                            <td>29</td>
-                            <td>30</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+                        @php
+                            $firstDay = date('N', strtotime(date('Y-m-01')));
+                            $firstDay = $firstDay % 7; // Convert to 0 (Sunday) through 6 (Saturday)
+                            $daysInMonth = date('t');
+                            $day = 1;
+                            $rows = ceil(($daysInMonth + $firstDay) / 7);
+                        @endphp
+
+                        @for ($i = 0; $i < $rows; $i++)
+                            <tr>
+                                @for ($j = 0; $j < 7; $j++)
+                                    @if (($i === 0 && $j < $firstDay) || $day > $daysInMonth)
+                                        <td></td>
+                                    @else
+                                        <td class="{{ isset($calendarData[$day]) && count($calendarData[$day]) > 0 ? 'has-events' : '' }}">
+                                            {{ $day }}
+                                            @if (isset($calendarData[$day]) && count($calendarData[$day]) > 0)
+                                                <div class="event-indicator" data-toggle="tooltip" data-html="true"
+                                                    title="@foreach($calendarData[$day] as $event){{ $event->title }}<br>@endforeach">
+                                                    <span>{{ count($calendarData[$day]) }}</span>
+                                                </div>
+                                            @endif
+                                        </td>
+                                        @php $day++; @endphp
+                                    @endif
+                                @endfor
+                            </tr>
+                        @endfor
                     </tbody>
                 </table>
             </div>
@@ -119,21 +102,21 @@
             <div class="dashboard-card h-100">
                 <h5>Area of accomplishment</h5>
                 <div class="area-stats">
-                    @php
-                        $areas = isset($areaAccomplishment) ? $areaAccomplishment : ['Design' => 85, 'Construction' => 70, 'Planning' => 90, 'Implementation' => 65];
-                    @endphp
-
-                    @foreach($areas as $area => $percentage)
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="area-name">{{ $area }}</span>
-                            <span class="area-percentage">{{ $percentage }}%</span>
+                    @if(isset($areaAccomplishment))
+                        @foreach($areaAccomplishment as $area => $percentage)
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="area-name">{{ $area }}</span>
+                                <span class="area-percentage">{{ $percentage }}%</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: {{ $percentage }}%;" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
-                        <div class="progress" style="height: 10px;">
-                            <div class="progress-bar" role="progressbar" style="width: {{ $percentage }}%;" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    @endforeach
+                        @endforeach
+                    @else
+                        <p class="no-data">No area data available</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -204,10 +187,34 @@
         text-align: center;
         padding: 5px 3px;
         font-size: 14px;
+        position: relative;
+        height: 35px;
     }
 
     .calendar-table thead td {
         font-weight: bold;
+    }
+
+    .calendar-table td.has-events {
+        font-weight: bold;
+        color: #FF8000;
+        position: relative;
+    }
+
+    .event-indicator {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        background-color: #FF8000;
+        color: white;
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+        font-size: 9px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
     }
 
     /* Financial stats styling */
@@ -278,6 +285,9 @@
 
 @section('scripts')
 <script>
-    // Any additional JavaScript for your dashboard can be added here
+    // Initialize tooltips for calendar events
+    $(function() {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
 </script>
 @endsection

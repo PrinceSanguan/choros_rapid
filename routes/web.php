@@ -10,6 +10,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ScheduleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Customer routes
     Route::resource('customers', CustomerController::class);
+
+    // Schedule routes
+    Route::resource('schedules', ScheduleController::class);
 
     // Report routes
     Route::get('/reports/weekly', [ReportController::class, 'weekly'])->name('reports.weekly');

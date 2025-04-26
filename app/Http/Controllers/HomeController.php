@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Schedule;
 
 class HomeController extends Controller
 {
@@ -101,12 +102,32 @@ class HomeController extends Controller
         $pendingProjects = Project::where('status', 'pending')->count();
         $projectAccomplishment = $totalProjects > 0 ? round(($completedProjects / $totalProjects) * 100) : 0;
 
-        // Area accomplishment data
+        // Dynamic area accomplishment calculation based on real data
+        $designProjects = Project::where('status', 'completed')
+            ->whereRaw("description LIKE '%design%' OR name LIKE '%design%'")
+            ->count();
+        $designPercentage = $totalProjects > 0 ? round(($designProjects / $totalProjects) * 100) : 0;
+
+        $constructionProjects = Project::where('status', 'completed')
+            ->whereRaw("description LIKE '%construction%' OR name LIKE '%construction%'")
+            ->count();
+        $constructionPercentage = $totalProjects > 0 ? round(($constructionProjects / $totalProjects) * 100) : 0;
+
+        $planningProjects = Project::where('status', 'completed')
+            ->whereRaw("description LIKE '%planning%' OR name LIKE '%planning%'")
+            ->count();
+        $planningPercentage = $totalProjects > 0 ? round(($planningProjects / $totalProjects) * 100) : 0;
+
+        $implementationProjects = Project::where('status', 'completed')
+            ->whereRaw("description LIKE '%implementation%' OR name LIKE '%implementation%'")
+            ->count();
+        $implementationPercentage = $totalProjects > 0 ? round(($implementationProjects / $totalProjects) * 100) : 0;
+
         $areaAccomplishment = [
-            'design' => 85,
-            'construction' => 70,
-            'planning' => 90,
-            'implementation' => 65
+            'Design' => max(min($designPercentage, 100), 0),
+            'Construction' => max(min($constructionPercentage, 100), 0),
+            'Planning' => max(min($planningPercentage, 100), 0),
+            'Implementation' => max(min($implementationPercentage, 100), 0)
         ];
 
         // Top clients by purchase amount
@@ -117,6 +138,32 @@ class HomeController extends Controller
             ->orderBy('total_purchase', 'desc')
             ->take(5)
             ->get();
+
+        // Get current month calendar events
+        $currentMonth = now()->format('m');
+        $currentYear = now()->format('Y');
+        $daysInMonth = now()->daysInMonth;
+
+        // Get all schedules for the current month
+        $schedules = Schedule::whereMonth('start_date', $currentMonth)
+            ->whereYear('start_date', $currentYear)
+            ->get();
+
+        // Prepare calendar data
+        $calendarData = [];
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $calendarData[$i] = [];
+        }
+
+        foreach ($schedules as $schedule) {
+            $day = (int)date('d', strtotime($schedule->start_date));
+            if (isset($calendarData[$day])) {
+                $calendarData[$day][] = $schedule;
+            }
+        }
+
+        // Get month name for calendar header
+        $monthName = date('F Y');
 
         return view('admin.dashboard', compact(
             'users',
@@ -134,7 +181,9 @@ class HomeController extends Controller
             'totalProjects',
             'completedProjects',
             'ongoingProjects',
-            'pendingProjects'
+            'pendingProjects',
+            'calendarData',
+            'monthName'
         ));
     }
 
