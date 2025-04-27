@@ -11,6 +11,7 @@
         body {
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
+            overflow-x: hidden;
         }
 
         .sidebar {
@@ -72,6 +73,7 @@
             color: #000;
             padding: 4px 15px 4px 30px;
             white-space: normal;
+            font-size: 14px;
         }
 
         .sidebar .dropdown-item:hover {
@@ -107,59 +109,19 @@
             top: 10px;
             left: 10px;
             z-index: 999;
+            border-radius: 4px;
             display: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        @media (max-width: 768px) {
-            #sidebarToggle {
-                display: block;
-            }
-            .sidebar {
-                position: fixed;
-                z-index: 998;
-                left: -100%;
-                width: 250px;
-            }
-            .sidebar.show {
-                left: 0;
-            }
-            .col-md-10 {
-                width: 100%;
-            }
+        /* Content area */
+        #content {
+            transition: all 0.3s;
+            padding-left: 15px;
+            padding-right: 15px;
         }
 
-        .dashboard-card {
-            background-color: #f0ebe8;
-            border-radius: 5px;
-            padding: 15px;
-            height: 200px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-card {
-            background-color: #f0ebe8;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-header {
-            background-color: #000;
-            color: #fff;
-            padding: 5px;
-            text-align: center;
-        }
-
-        .calendar-table {
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .calendar-table td {
-            text-align: center;
-            padding: 5px;
-        }
-
+        /* Header area responsiveness */
         .header-date {
             color: #666;
             font-size: 14px;
@@ -184,6 +146,89 @@
             border-radius: 50%;
             margin-right: 5px;
         }
+
+        /* Responsive breakpoints */
+        @media (max-width: 991px) {
+            .header-date {
+                font-size: 12px;
+                margin-right: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #sidebarToggle {
+                display: block;
+            }
+
+            .sidebar {
+                position: fixed;
+                z-index: 998;
+                left: -250px;
+                width: 250px;
+                padding-top: 60px;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            #content {
+                width: 100%;
+                padding-left: 10px;
+                padding-right: 10px;
+                margin-left: 0;
+            }
+
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .header-date {
+                display: none;
+            }
+
+            /* Add padding to top to account for toggle button */
+            body {
+                padding-top: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            #content {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            .user-dropdown-btn span {
+                display: none;
+            }
+        }
+
+        /* Overlay when sidebar is open on mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 997;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
     </style>
     @yield('styles')
 </head>
@@ -193,8 +238,11 @@
         <i class="fas fa-bars"></i>
     </button>
 
-    <div class="container-fluid">
-        <div class="row">
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="container-fluid px-0">
+        <div class="row g-0">
             <!-- Sidebar -->
             <div class="col-md-2 sidebar" id="sidebar">
                 <div class="logo">
@@ -280,7 +328,7 @@
             <div class="col-md-10" id="content">
                 <div class="container py-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>@yield('title')</h2>
+                        <h2 class="mb-0 mt-4">@yield('title')</h2>
                         <div class="d-flex align-items-center">
                             <span class="header-date">{{ \Carbon\Carbon::now()->format('F d, Y, h:i a') }}</span>
                             <div class="dropdown user-dropdown">
@@ -314,6 +362,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle arrow direction and add active class
             const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
 
             dropdownToggles.forEach(toggle => {
                 toggle.addEventListener('click', function(e) {
@@ -323,24 +374,44 @@
             });
 
             // Mobile sidebar toggle
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.getElementById('sidebar');
-
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function() {
                     sidebar.classList.toggle('show');
+                    sidebarOverlay.classList.toggle('show');
+                    document.body.classList.toggle('sidebar-open');
                 });
             }
 
-            // Close sidebar when clicking outside (mobile only)
+            // Close sidebar when clicking on overlay
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                    document.body.classList.remove('sidebar-open');
+                });
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                    document.body.classList.remove('sidebar-open');
+                }
+            });
+
+            // Close dropdown menus when clicking outside on mobile
             document.addEventListener('click', function(event) {
                 if (window.innerWidth <= 768) {
-                    const isClickInsideSidebar = sidebar.contains(event.target);
-                    const isClickOnToggle = sidebarToggle.contains(event.target);
-
-                    if (!isClickInsideSidebar && !isClickOnToggle && sidebar.classList.contains('show')) {
-                        sidebar.classList.remove('show');
-                    }
+                    const dropdownMenus = document.querySelectorAll('.dropdown-menu.show');
+                    dropdownMenus.forEach(menu => {
+                        const parent = menu.closest('.nav-item');
+                        if (parent && !parent.contains(event.target)) {
+                            menu.classList.remove('show');
+                            const arrow = parent.querySelector('.arrow');
+                            if (arrow) arrow.classList.remove('down');
+                        }
+                    });
                 }
             });
         });

@@ -14,6 +14,12 @@
 
     <!-- Styles -->
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -27,8 +33,9 @@
 
         .container {
             display: flex;
-            width: 800px;
-            max-width: 100%;
+            flex-direction: column;
+            width: 95%;
+            max-width: 800px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             overflow: hidden;
@@ -36,49 +43,50 @@
 
         .logo-section {
             background-color: white;
-            padding: 40px;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 50%;
+            width: 100%;
         }
 
         .logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
+            width: 90px;
+            height: 90px;
+            margin-bottom: 15px;
+            object-fit: contain;
         }
 
         .company-name {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 5px;
         }
 
         .company-slogan {
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
             text-align: center;
         }
 
         .login-section {
             background-color: #FF8000;
-            padding: 40px;
-            width: 50%;
+            padding: 25px 20px;
+            width: 100%;
         }
 
         .login-header {
             text-align: center;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: black;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
@@ -90,10 +98,11 @@
 
         .form-control {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: none;
             border-radius: 4px;
             box-sizing: border-box;
+            font-size: 14px;
         }
 
         .input-icon {
@@ -102,33 +111,35 @@
 
         .input-icon svg {
             position: absolute;
-            left: 10px;
+            left: 8px;
             top: 50%;
             transform: translateY(-50%);
             color: #666;
+            width: 14px;
+            height: 14px;
         }
 
         .input-icon input {
-            padding-left: 35px;
+            padding-left: 30px;
         }
 
         .forgot-link {
             display: block;
             text-align: right;
-            margin-bottom: 20px;
-            font-size: 14px;
+            margin-bottom: 15px;
+            font-size: 13px;
             color: black;
             text-decoration: none;
         }
 
         .btn-login {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background-color: black;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
             cursor: pointer;
         }
@@ -142,18 +153,158 @@
             color: #721c24;
             padding: 10px;
             border-radius: 4px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
-        @media (max-width: 768px) {
+        /* Tablet and desktop styles */
+        @media (min-width: 768px) {
             .container {
-                flex-direction: column;
+                flex-direction: row;
                 width: 90%;
             }
 
-            .logo-section, .login-section {
+            .logo-section {
+                width: 50%;
+                padding: 40px;
+            }
+
+            .login-section {
+                width: 50%;
+                padding: 40px;
+            }
+
+            .logo {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 20px;
+            }
+
+            .company-name {
+                font-size: 24px;
+            }
+
+            .company-slogan {
+                font-size: 14px;
+            }
+
+            .login-header {
+                font-size: 20px;
+                margin-bottom: 30px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-control {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            .input-icon svg {
+                left: 10px;
+                width: 16px;
+                height: 16px;
+            }
+
+            .input-icon input {
+                padding-left: 35px;
+            }
+
+            .forgot-link {
+                margin-bottom: 20px;
+                font-size: 14px;
+            }
+
+            .btn-login {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 375px) {
+            .container {
                 width: 100%;
-                padding: 30px;
+                border-radius: 0;
+            }
+
+            .logo-section {
+                padding: 20px 15px;
+            }
+
+            .logo {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 10px;
+            }
+
+            .company-name {
+                font-size: 18px;
+            }
+
+            .company-slogan {
+                font-size: 12px;
+            }
+
+            .login-section {
+                padding: 20px 15px;
+            }
+
+            .login-header {
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+
+            .form-control {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .forgot-link {
+                font-size: 12px;
+                margin-bottom: 12px;
+            }
+
+            .btn-login {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        /* For landscape orientation on mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 10px 0;
+            }
+
+            .container {
+                flex-direction: row;
+            }
+
+            .logo-section {
+                width: 40%;
+                padding: 15px;
+            }
+
+            .login-section {
+                width: 60%;
+                padding: 15px 20px;
+            }
+
+            .logo {
+                width: 70px;
+                height: 70px;
+                margin-bottom: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            .forgot-link {
+                margin-bottom: 10px;
             }
         }
     </style>

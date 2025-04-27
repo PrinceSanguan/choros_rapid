@@ -16,59 +16,61 @@ use Illuminate\Support\Str;
 
     <div class="row mb-4">
         <!-- First Row -->
-        <div class="col-md-6 mb-4 mb-md-0">
+        <div class="col-lg-6 col-md-12 mb-4">
             <div class="dashboard-card h-100">
                 <h5>Calendar for schedules</h5>
                 <div class="calendar-header">
                     {{ $monthName ?? 'CURRENT MONTH' }}
                 </div>
-                <table class="calendar-table">
-                    <thead>
-                        <tr>
-                            <td>S</td>
-                            <td>M</td>
-                            <td>T</td>
-                            <td>W</td>
-                            <td>T</td>
-                            <td>F</td>
-                            <td>S</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $firstDay = date('N', strtotime(date('Y-m-01')));
-                            $firstDay = $firstDay % 7; // Convert to 0 (Sunday) through 6 (Saturday)
-                            $daysInMonth = date('t');
-                            $day = 1;
-                            $rows = ceil(($daysInMonth + $firstDay) / 7);
-                        @endphp
-
-                        @for ($i = 0; $i < $rows; $i++)
+                <div class="table-responsive">
+                    <table class="calendar-table">
+                        <thead>
                             <tr>
-                                @for ($j = 0; $j < 7; $j++)
-                                    @if (($i === 0 && $j < $firstDay) || $day > $daysInMonth)
-                                        <td></td>
-                                    @else
-                                        <td class="{{ isset($calendarData[$day]) && count($calendarData[$day]) > 0 ? 'has-events' : '' }}">
-                                            {{ $day }}
-                                            @if (isset($calendarData[$day]) && count($calendarData[$day]) > 0)
-                                                <div class="event-indicator" data-day="{{ $day }}">
-                                                    <span>{{ count($calendarData[$day]) }}</span>
-                                                </div>
-                                            @endif
-                                        </td>
-                                        @php $day++; @endphp
-                                    @endif
-                                @endfor
+                                <td>S</td>
+                                <td>M</td>
+                                <td>T</td>
+                                <td>W</td>
+                                <td>T</td>
+                                <td>F</td>
+                                <td>S</td>
                             </tr>
-                        @endfor
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @php
+                                $firstDay = date('N', strtotime(date('Y-m-01')));
+                                $firstDay = $firstDay % 7; // Convert to 0 (Sunday) through 6 (Saturday)
+                                $daysInMonth = date('t');
+                                $day = 1;
+                                $rows = ceil(($daysInMonth + $firstDay) / 7);
+                            @endphp
+
+                            @for ($i = 0; $i < $rows; $i++)
+                                <tr>
+                                    @for ($j = 0; $j < 7; $j++)
+                                        @if (($i === 0 && $j < $firstDay) || $day > $daysInMonth)
+                                            <td></td>
+                                        @else
+                                            <td class="{{ isset($calendarData[$day]) && count($calendarData[$day]) > 0 ? 'has-events' : '' }}">
+                                                {{ $day }}
+                                                @if (isset($calendarData[$day]) && count($calendarData[$day]) > 0)
+                                                    <div class="event-indicator" data-day="{{ $day }}">
+                                                        <span>{{ count($calendarData[$day]) }}</span>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            @php $day++; @endphp
+                                        @endif
+                                    @endfor
+                                </tr>
+                            @endfor
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4 mb-md-0">
+        <div class="col-lg-6 col-md-12 mb-4">
             <div class="dashboard-card h-100">
-                <h5>total annual for week(sale)</h5>
+                <h5>Total weekly sales</h5>
                 <div class="annual-stats">
                     ₱{{ number_format($weeklyAnnualSale ?? 0, 2) }}
                 </div>
@@ -78,9 +80,9 @@ use Illuminate\Support\Str;
 
     <div class="row mb-4">
         <!-- Second Row -->
-        <div class="col-md-6 mb-4 mb-md-0">
+        <div class="col-lg-6 col-md-12 mb-4">
             <div class="dashboard-card h-100">
-                <h5>Accomplishment of project</h5>
+                <h5>Project accomplishment</h5>
                 <div class="project-stats">
                     <div class="progress mt-2 mb-3" style="height: 24px;">
                         <div class="progress-bar" role="progressbar" style="width: {{ $projectAccomplishment ?? 0 }}%;" aria-valuenow="{{ $projectAccomplishment ?? 0 }}" aria-valuemin="0" aria-valuemax="100">{{ $projectAccomplishment ?? 0 }}%</div>
@@ -89,9 +91,9 @@ use Illuminate\Support\Str;
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4 mb-md-0">
+        <div class="col-lg-6 col-md-12 mb-4">
             <div class="dashboard-card h-100">
-                <h5>total annual for month (sale)</h5>
+                <h5>Total monthly sales</h5>
                 <div class="annual-stats">
                     ₱{{ number_format($monthlyAnnualSale ?? 0, 2) }}
                 </div>
@@ -101,9 +103,9 @@ use Illuminate\Support\Str;
 
     <div class="row">
         <!-- Third Row -->
-        <div class="col-md-6 mb-4 mb-md-0">
+        <div class="col-lg-6 col-md-12 mb-4">
             <div class="dashboard-card h-100">
-                <h5>Area of accomplishment</h5>
+                <h5>Area accomplishment</h5>
                 <div class="area-stats">
                     @if(isset($areaAccomplishment))
                         @foreach($areaAccomplishment as $area => $percentage)
@@ -123,15 +125,15 @@ use Illuminate\Support\Str;
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-6 col-md-12 mb-4">
             <div class="dashboard-card h-100">
                 <h5>Top-tier Purchase Client</h5>
                 <div class="client-stats">
                     @if(isset($topClients) && count($topClients) > 0)
                         @foreach($topClients as $index => $client)
                             <div class="d-flex justify-content-between mb-2">
-                                <span>{{ $index + 1 }}. {{ $client->name }}</span>
-                                <span>₱{{ number_format($client->total_purchase, 2) }}</span>
+                                <span class="client-name">{{ $index + 1 }}. {{ $client->name }}</span>
+                                <span class="client-amount">₱{{ number_format($client->total_purchase, 2) }}</span>
                             </div>
                         @endforeach
                     @else
@@ -159,17 +161,17 @@ use Illuminate\Support\Str;
                                 <h6 class="event-title">{{ $event->title }}</h6>
                                 <div class="event-detail">
                                     @if($event->project)
-                                        <p><strong>Project:</strong> {{ $event->project->name }}</p>
+                                        <p><strong>Project:</strong> {{ Str::limit($event->project->name, 40) }}</p>
                                     @endif
                                     <p><strong>Time:</strong> {{ date('h:i A', strtotime($event->start_date)) }}</p>
                                     @if($event->description)
-                                        <p><strong>Description:</strong> {{ $event->description }}</p>
+                                        <p><strong>Description:</strong> {{ Str::limit($event->description, 100) }}</p>
                                     @endif
                                     @if($event->project && $event->project->location)
-                                        <p><strong>Location:</strong> {{ $event->project->location }}</p>
+                                        <p><strong>Location:</strong> {{ Str::limit($event->project->location, 40) }}</p>
                                     @endif
                                     @if($event->project && $event->project->contractor)
-                                        <p><strong>Contractor:</strong> {{ $event->project->contractor }}</p>
+                                        <p><strong>Contractor:</strong> {{ Str::limit($event->project->contractor, 40) }}</p>
                                     @endif
                                     <p><strong>Status:</strong>
                                         <span class="badge {{ $event->status == 'completed' ? 'bg-success' : ($event->status == 'cancelled' ? 'bg-danger' : 'bg-warning') }}">
@@ -218,6 +220,7 @@ use Illuminate\Support\Str;
         font-weight: 600;
         margin-bottom: 15px;
         color: #333;
+        text-transform: capitalize;
     }
 
     /* Calendar styling */
@@ -228,6 +231,11 @@ use Illuminate\Support\Str;
         text-align: center;
         margin-bottom: 8px;
         font-weight: bold;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .calendar-table {
@@ -393,6 +401,10 @@ use Illuminate\Support\Str;
 
     .area-name {
         font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 70%;
     }
 
     .area-percentage {
@@ -404,20 +416,70 @@ use Illuminate\Support\Str;
         margin-top: 10px;
     }
 
+    .client-name {
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 70%;
+    }
+
+    .client-amount {
+        font-weight: 500;
+    }
+
     .no-data {
         color: #666;
         font-style: italic;
     }
 
     /* Responsive adjustments */
-    @media (max-width: 767px) {
-        .annual-stats {
-            font-size: 24px;
-            margin-top: 20px;
+    @media (max-width: 991px) {
+        .dashboard-title {
+            font-size: 22px;
         }
 
         .dashboard-card {
-            margin-bottom: 20px;
+            padding: 15px;
+        }
+
+        .annual-stats {
+            font-size: 26px;
+            margin-top: 30px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .dashboard-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .annual-stats {
+            font-size: 22px;
+            margin-top: 15px;
+        }
+
+        .dashboard-card {
+            margin-bottom: 15px;
+            padding: 15px 12px;
+        }
+
+        .dashboard-card h5 {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .calendar-table td {
+            padding: 4px 2px;
+            font-size: 12px;
+            height: 30px;
+        }
+
+        .event-indicator {
+            width: 12px;
+            height: 12px;
+            font-size: 8px;
         }
 
         .modal-content {
@@ -436,6 +498,69 @@ use Illuminate\Support\Str;
         .event-detail p {
             font-size: 13px;
         }
+
+        .progress {
+            height: 15px;
+        }
+
+        .project-count {
+            font-size: 13px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .dashboard-title {
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .dashboard-card {
+            padding: 12px 10px;
+        }
+
+        .annual-stats {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        .calendar-header {
+            font-size: 13px;
+        }
+
+        .calendar-table td {
+            padding: 3px 1px;
+            font-size: 11px;
+            height: 25px;
+        }
+
+        .event-indicator {
+            width: 10px;
+            height: 10px;
+            font-size: 7px;
+            right: 1px;
+            bottom: 1px;
+        }
+
+        .modal-header h5 {
+            font-size: 16px;
+        }
+
+        .modal-body {
+            padding: 12px;
+        }
+
+        .event-title {
+            font-size: 15px;
+        }
+
+        .event-detail p {
+            font-size: 12px;
+        }
+
+        .event-detail .btn {
+            font-size: 11px;
+            padding: 0.25rem 0.5rem;
+        }
     }
 </style>
 @endsection
@@ -452,23 +577,16 @@ use Illuminate\Support\Str;
         // For detecting if we're on mobile
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        // Show modal on click/hover depending on device
+        // Show modal on click for both mobile and desktop for better consistency
         eventIndicators.forEach(indicator => {
             const day = indicator.getAttribute('data-day');
             const modal = document.getElementById(`event-modal-${day}`);
 
             if (modal) {
-                // Use click for mobile and hover for desktop
-                if (isMobile) {
-                    indicator.addEventListener('click', function(e) {
-                        showModal(modal);
-                        e.stopPropagation();
-                    });
-                } else {
-                    indicator.addEventListener('mouseenter', function() {
-                        showModal(modal);
-                    });
-                }
+                indicator.addEventListener('click', function(e) {
+                    showModal(modal);
+                    e.stopPropagation();
+                });
             }
         });
 
@@ -481,12 +599,22 @@ use Illuminate\Support\Str;
 
             // Show this modal
             modal.classList.add('active');
+
+            // Prevent body scrolling when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Function to hide modal
+        function hideModal(modal) {
+            modal.classList.remove('active');
+            // Restore body scrolling
+            document.body.style.overflow = '';
         }
 
         // Close modal when clicking the close button
         closeButtons.forEach(button => {
             button.addEventListener('click', function(e) {
-                this.closest('.calendar-event-modal').classList.remove('active');
+                hideModal(this.closest('.calendar-event-modal'));
                 e.stopPropagation();
             });
         });
@@ -497,7 +625,36 @@ use Illuminate\Support\Str;
                 if (modal.classList.contains('active')) {
                     const modalContent = modal.querySelector('.modal-content');
                     if (!modalContent.contains(e.target)) {
-                        modal.classList.remove('active');
+                        hideModal(modal);
+                    }
+                }
+            });
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                modals.forEach(modal => {
+                    if (modal.classList.contains('active')) {
+                        hideModal(modal);
+                    }
+                });
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            // Adjust modal position if needed
+            modals.forEach(modal => {
+                if (modal.classList.contains('active')) {
+                    const modalContent = modal.querySelector('.modal-content');
+                    if (modalContent) {
+                        // Ensure modal stays properly centered
+                        if (window.innerWidth <= 576) {
+                            modalContent.style.maxHeight = '90vh';
+                        } else {
+                            modalContent.style.maxHeight = '80vh';
+                        }
                     }
                 }
             });
