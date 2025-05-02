@@ -36,10 +36,16 @@
                                             <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
                                             <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" required>
                                                 <option value="" selected disabled>Select Category</option>
-                                                <option value="Electronics" {{ old('category') == 'Electronics' ? 'selected' : '' }}>Electronics</option>
-                                                <option value="Clothing" {{ old('category') == 'Clothing' ? 'selected' : '' }}>Clothing</option>
-                                                <option value="Food" {{ old('category') == 'Food' ? 'selected' : '' }}>Food</option>
-                                                <option value="Furniture" {{ old('category') == 'Furniture' ? 'selected' : '' }}>Furniture</option>
+                                                <option value="Cement" {{ old('category') == 'Cement' ? 'selected' : '' }}>Cement</option>
+                                                <option value="Steel Bars" {{ old('category') == 'Steel Bars' ? 'selected' : '' }}>Steel Bars</option>
+                                                <option value="Aggregates" {{ old('category') == 'Aggregates' ? 'selected' : '' }}>Aggregates</option>
+                                                <option value="Lumber" {{ old('category') == 'Lumber' ? 'selected' : '' }}>Lumber</option>
+                                                <option value="Plumbing" {{ old('category') == 'Plumbing' ? 'selected' : '' }}>Plumbing</option>
+                                                <option value="Electrical" {{ old('category') == 'Electrical' ? 'selected' : '' }}>Electrical</option>
+                                                <option value="Hardware" {{ old('category') == 'Hardware' ? 'selected' : '' }}>Hardware</option>
+                                                <option value="Tools" {{ old('category') == 'Tools' ? 'selected' : '' }}>Tools</option>
+                                                <option value="Paint" {{ old('category') == 'Paint' ? 'selected' : '' }}>Paint</option>
+                                                <option value="Safety Equipment" {{ old('category') == 'Safety Equipment' ? 'selected' : '' }}>Safety Equipment</option>
                                                 <option value="Other" {{ old('category') == 'Other' ? 'selected' : '' }}>Other</option>
                                             </select>
                                             @error('category')
@@ -95,7 +101,7 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="buying_price" class="form-label">Buying Price ($) <span class="text-danger">*</span></label>
+                                            <label for="buying_price" class="form-label">Buying Price (₱) <span class="text-danger">*</span></label>
                                             <input type="number" step="0.01" class="form-control @error('buying_price') is-invalid @enderror"
                                                 id="buying_price" name="buying_price" value="{{ old('buying_price') }}" min="0" required>
                                             @error('buying_price')
@@ -104,7 +110,7 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="selling_price" class="form-label">Selling Price ($) <span class="text-danger">*</span></label>
+                                            <label for="selling_price" class="form-label">Selling Price (₱) <span class="text-danger">*</span></label>
                                             <input type="number" step="0.01" class="form-control @error('selling_price') is-invalid @enderror"
                                                 id="selling_price" name="selling_price" value="{{ old('selling_price') }}" min="0" required>
                                             @error('selling_price')

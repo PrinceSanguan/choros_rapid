@@ -21,6 +21,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Project Name</th>
+                            <th>Customer</th>
                             <th>Date</th>
                             <th>Location</th>
                             <th>Contractor</th>
@@ -31,10 +32,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($projects as $project)
+                        @forelse ($projects as $index => $project)
                             <tr>
-                                <td>{{ $project->id }}</td>
+                                <td>{{ $index + 1 }}</td>
                                 <td>{{ $project->name }}</td>
+                                <td>{{ $project->customer ? $project->customer->name : 'N/A' }}</td>
                                 <td>{{ $project->date ? $project->date->format('M d, Y') : 'N/A' }}</td>
                                 <td>{{ $project->location }}</td>
                                 <td>{{ $project->contractor }}</td>

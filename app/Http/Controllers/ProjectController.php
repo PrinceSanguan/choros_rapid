@@ -33,7 +33,8 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('projects.create');
+        $customers = \App\Models\Customer::orderBy('name')->get();
+        return view('projects.create', compact('customers'));
     }
 
     /**
@@ -91,7 +92,8 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        return view('projects.edit', compact('project'));
+        $customers = \App\Models\Customer::orderBy('name')->get();
+        return view('projects.edit', compact('project', 'customers'));
     }
 
     /**
@@ -114,27 +116,46 @@ class ProjectController extends Controller
             'manager_id' => 'nullable|exists:users,id',
         ]);
 
-        $project->update($validated);
+        try {
+            $project->update($validated);
 
-        // Update the associated schedule if it exists, or create a new one
-        $schedule = Schedule::where('project_id', $project->id)->first();
+            // Update the associated schedule if it exists, or create a new one
+            $schedule = Schedule::where('project_id', $project->id)->first();
 
-        $scheduleData = [
-            'title' => $validated['name'],
-            'description' => $validated['description'] ?? "Project at {$validated['location']}",
-            'start_date' => $validated['start_date'] ?? now(),
-            'status' => ($validated['status'] == 'completed') ? 'completed' : 'scheduled',
-        ];
+            $scheduleData = [
+                'title' => $validated['name'],
+                'description' => $validated['description'] ?? "Project at {$validated['location']}",
+                'start_date' => $validated['start_date'] ?? now(),
+                'status' => ($validated['status'] ?? null) == 'completed' ? 'completed' : 'scheduled',
+            ];
 
-        if ($schedule) {
-            $schedule->update($scheduleData);
-        } else {
-            $scheduleData['project_id'] = $project->id;
-            $scheduleData['user_id'] = Auth::id();
-            Schedule::create($scheduleData);
+            if ($schedule) {
+                $schedule->update($scheduleData);
+            } else {
+                $scheduleData['project_id'] = $project->id;
+                $scheduleData['user_id'] = Auth::id();
+                Schedule::create($scheduleData);
+            }
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Project updated successfully and calendar updated.',
+                    'redirect' => route('projects.index')
+                ]);
+            }
+
+            return redirect()->route('projects.index')->with('success', 'Project updated successfully and calendar updated.');
+        } catch (\Exception $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['update_error' => 'Failed to update project. ' . $e->getMessage()]
+                ]);
+            }
+
+            return back()->withInput()->withErrors(['update_error' => 'Failed to update project. ' . $e->getMessage()]);
         }
-
-        return redirect()->route('projects.index')->with('success', 'Project updated successfully and calendar updated.');
     }
 
     /**

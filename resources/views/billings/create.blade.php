@@ -69,7 +69,7 @@
                                 <div class="mb-3">
                                     <label for="amount" class="form-label">Amount</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">₱</span>
                                         <input type="number" step="0.01" class="form-control" id="amount" name="amount" value="{{ old('amount') }}" required>
                                     </div>
                                 </div>
@@ -88,11 +88,9 @@
                                     <label for="payment_method" class="form-label">Payment Method</label>
                                     <select class="form-select" id="payment_method" name="payment_method" required>
                                         <option value="">Select Payment Method</option>
-                                        @foreach ($payment_methods as $method)
-                                        <option value="{{ $method }}" {{ old('payment_method') == $method ? 'selected' : '' }}>
-                                            {{ $method }}
-                                        </option>
-                                        @endforeach
+                                        <option value="cash" {{ old('payment_method') == 'cash' ? 'selected' : '' }}>Cash</option>
+                                        <option value="bank_transfer" {{ old('payment_method') == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
+                                        <option value="check" {{ old('payment_method') == 'check' ? 'selected' : '' }}>Check</option>
                                     </select>
                                 </div>
 

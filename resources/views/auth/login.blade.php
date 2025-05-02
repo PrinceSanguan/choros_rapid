@@ -72,7 +72,7 @@
         }
 
         .login-section {
-            background-color: #FF8000;
+            background-color: #76cd26;
             padding: 25px 20px;
             width: 100%;
         }
@@ -314,7 +314,7 @@
         <div class="logo-section">
             <img src="{{ asset('images/Rapid.jpg') }}" alt="Rapid Concretech Logo" class="logo">
             <div class="company-name">Rapid Concretech</div>
-            <div class="company-slogan">Building Excellence</div>
+            <div class="company-slogan">Builders Corporation</div>
         </div>
 
         <div class="login-section">
@@ -346,8 +346,6 @@
                         <input id="password" type="password" class="form-control" name="password" required autocomplete="current-password" placeholder="Password">
                     </div>
                 </div>
-
-                <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
 
                 <button type="submit" class="btn-login">
                     LOGIN

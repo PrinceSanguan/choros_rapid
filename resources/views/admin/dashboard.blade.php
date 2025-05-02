@@ -20,7 +20,11 @@ use Illuminate\Support\Str;
             <div class="dashboard-card h-100">
                 <h5>Calendar for schedules</h5>
                 <div class="calendar-header">
-                    {{ $monthName ?? 'CURRENT MONTH' }}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn-calendar-nav prev-month"><i class="fas fa-chevron-left"></i></button>
+                        <span>{{ $monthName ?? 'CURRENT MONTH' }}</span>
+                        <button class="btn-calendar-nav next-month"><i class="fas fa-chevron-right"></i></button>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="calendar-table">
@@ -233,6 +237,18 @@ use Illuminate\Support\Str;
         font-weight: bold;
     }
 
+    .btn-calendar-nav {
+        background: none;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        padding: 0 8px;
+    }
+
+    .btn-calendar-nav:hover {
+        color: #76cd26;
+    }
+
     .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -257,7 +273,7 @@ use Illuminate\Support\Str;
 
     .calendar-table td.has-events {
         font-weight: bold;
-        color: #FF8000;
+        color: #76cd26;
         position: relative;
     }
 
@@ -265,7 +281,7 @@ use Illuminate\Support\Str;
         position: absolute;
         bottom: 2px;
         right: 2px;
-        background-color: #FF8000;
+        background-color: #76cd26;
         color: white;
         border-radius: 50%;
         width: 15px;
@@ -315,7 +331,7 @@ use Illuminate\Support\Str;
     }
 
     .modal-header {
-        background-color: #FF8000;
+        background-color: #76cd26;
         color: white;
         padding: 15px;
         display: flex;
@@ -391,7 +407,7 @@ use Illuminate\Support\Str;
     }
 
     .progress-bar {
-        background-color: #FF8000;
+        background-color: #76cd26;
     }
 
     /* Area accomplishment styling */
@@ -567,6 +583,72 @@ use Illuminate\Support\Str;
 
 @section('scripts')
 <script>
+    // Update real-time clock
+    function updateClock() {
+        const now = new Date();
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: true
+        };
+        document.getElementById('current-datetime').textContent = now.toLocaleDateString('en-US', options);
+    }
+
+    // Update immediately and then every second
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Calendar navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        const prevMonthBtn = document.querySelector('.prev-month');
+        const nextMonthBtn = document.querySelector('.next-month');
+
+        if (prevMonthBtn && nextMonthBtn) {
+            prevMonthBtn.addEventListener('click', function() {
+                navigateCalendar('prev');
+            });
+
+            nextMonthBtn.addEventListener('click', function() {
+                navigateCalendar('next');
+            });
+        }
+
+        function navigateCalendar(direction) {
+            const currentUrl = new URL(window.location.href);
+            const searchParams = currentUrl.searchParams;
+
+            // Get current month and year from URL or use current date
+            let month = parseInt(searchParams.get('month') || (new Date()).getMonth() + 1);
+            let year = parseInt(searchParams.get('year') || (new Date()).getFullYear());
+
+            // Calculate new month and year
+            if (direction === 'prev') {
+                month -= 1;
+                if (month < 1) {
+                    month = 12;
+                    year -= 1;
+                }
+            } else {
+                month += 1;
+                if (month > 12) {
+                    month = 1;
+                    year += 1;
+                }
+            }
+
+            // Update URL params
+            searchParams.set('month', month);
+            searchParams.set('year', year);
+
+            // Navigate to new URL
+            window.location.href = currentUrl.toString();
+        }
+    });
+
     // Modal functionality for calendar events
     document.addEventListener('DOMContentLoaded', function() {
         // Get all event indicators

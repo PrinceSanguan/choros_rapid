@@ -98,6 +98,27 @@
 
                 <div class="row mb-3">
                     <div class="col-md-3">
+                        <label for="customer_id" class="form-label">Customer</label>
+                    </div>
+                    <div class="col-md-9">
+                        <select id="customer_id" class="form-control @error('customer_id') is-invalid @enderror" name="customer_id">
+                            <option value="">Select Customer</option>
+                            @foreach($customers as $customer)
+                                <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
+                                    {{ $customer->name }} {{ $customer->company_name ? '(' . $customer->company_name . ')' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('customer_id')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-3">
                         <label for="project_manager" class="form-label">Project Manager</label>
                     </div>
                     <div class="col-md-9">

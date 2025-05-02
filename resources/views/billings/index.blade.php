@@ -41,13 +41,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($billings as $billing)
+                                @forelse ($billings as $index => $billing)
                                 <tr>
-                                    <td>{{ $billing->id }}</td>
+                                    <td>{{ $index + 1 }}</td>
                                     <td>{{ $billing->invoice_number }}</td>
                                     <td>{{ $billing->project ? $billing->project->name : 'N/A' }}</td>
                                     <td>{{ $billing->customer ? $billing->customer->name : 'N/A' }}</td>
-                                    <td>${{ number_format($billing->amount, 2) }}</td>
+                                    <td>₱{{ number_format($billing->amount, 2) }}</td>
                                     <td>
                                         @php
                                             $statusClass = [

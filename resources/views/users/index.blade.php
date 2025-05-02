@@ -32,9 +32,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($users as $user)
+                                @forelse ($users as $index => $user)
                                     <tr>
-                                        <td>{{ $user->id }}</td>
+                                        <td>{{ $index + 1 }}</td>
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ ucfirst($user->position) }}</td>

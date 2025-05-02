@@ -133,7 +133,7 @@
                                                 @foreach ($customer->billingTransactions as $billing)
                                                 <tr>
                                                     <td>{{ $billing->invoice_number }}</td>
-                                                    <td>${{ number_format($billing->amount, 2) }}</td>
+                                                    <td>₱{{ number_format($billing->amount, 2) }}</td>
                                                     <td>
                                                         @php
                                                             $statusClass = [

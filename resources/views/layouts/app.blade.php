@@ -15,7 +15,7 @@
         }
 
         .sidebar {
-            background-color: #FF8000;
+            background-color: #76cd26;
             min-height: 100vh;
             padding-top: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -101,7 +101,7 @@
 
         /* Toggle button for mobile */
         #sidebarToggle {
-            background-color: #FF8000;
+            background-color: #76cd26;
             border: none;
             color: #000;
             padding: 10px;
@@ -252,7 +252,7 @@
                         </div>
                     </div>
                     <h4>Rapid Concretech</h4>
-                    <p>Dashboard</p>
+                    <p>Builders Corporation</p>
                 </div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
@@ -330,7 +330,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2 class="mb-0 mt-4">@yield('title')</h2>
                         <div class="d-flex align-items-center">
-                            <span class="header-date">{{ \Carbon\Carbon::now()->format('F d, Y, h:i a') }}</span>
+                            <span class="header-date" id="current-datetime">{{ \Carbon\Carbon::now()->format('F d, Y, h:i a') }}</span>
                             <div class="dropdown user-dropdown">
                                 <button class="user-dropdown-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     <span>User</span>

@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         // Create additional role-based users
         DB::table('users')->insert([
             'name' => 'Project Manager',
-            'email' => 'pm@gmail.com.com',
+            'email' => 'pm@gmail.com',
             'password' => Hash::make('password123'),
             'position' => 'project-manager',
             'created_at' => Carbon::now(),

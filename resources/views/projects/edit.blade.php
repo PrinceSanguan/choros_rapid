@@ -6,12 +6,26 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5>Edit Project</h5>
-                <a href="{{ route('projects.index') }}" class="btn btn-light">Back to Projects</a>
+                <a href="{{ route('projects.index') }}" class="btn btn-light" id="backButton">Back to Projects</a>
             </div>
 
             <hr class="mt-0 mb-3">
 
-            <form method="POST" action="{{ route('projects.update', $project) }}">
+            @if ($errors->any())
+                <div class="alert alert-danger" id="errorAlert">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="alert alert-success" id="successAlert" style="display:none;">
+                Project updated successfully!
+            </div>
+
+            <form method="POST" action="{{ route('projects.update', $project) }}" id="updateProjectForm">
                 @csrf
                 @method('PUT')
 
@@ -99,6 +113,27 @@
 
                 <div class="row mb-3">
                     <div class="col-md-3">
+                        <label for="customer_id" class="form-label">Customer</label>
+                    </div>
+                    <div class="col-md-9">
+                        <select id="customer_id" class="form-control @error('customer_id') is-invalid @enderror" name="customer_id">
+                            <option value="">Select Customer</option>
+                            @foreach($customers as $customer)
+                                <option value="{{ $customer->id }}" {{ (old('customer_id', $project->customer_id) == $customer->id) ? 'selected' : '' }}>
+                                    {{ $customer->name }} {{ $customer->company_name ? '(' . $customer->company_name . ')' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('customer_id')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-3">
                         <label for="project_manager" class="form-label">Project Manager</label>
                     </div>
                     <div class="col-md-9">
@@ -127,11 +162,79 @@
 
                 <div class="row">
                     <div class="col-md-12 text-end">
-                        <button type="submit" class="btn btn-primary">Update Project</button>
+                        <button type="submit" class="btn btn-primary" id="updateButton">Update Project</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('updateProjectForm');
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        const backButton = document.getElementById('backButton');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Clear previous alerts
+            if (errorAlert) errorAlert.style.display = 'none';
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    successAlert.style.display = 'block';
+
+                    // Scroll to top for user to see message
+                    window.scrollTo(0, 0);
+
+                    // Redirect to projects page after a short delay
+                    setTimeout(function() {
+                        window.location.href = "{{ route('projects.index') }}";
+                    }, 1500);
+                } else {
+                    // Handle errors
+                    if (data.errors) {
+                        let errorHtml = '<ul class="mb-0">';
+                        for (const error of Object.values(data.errors)) {
+                            errorHtml += `<li>${error}</li>`;
+                        }
+                        errorHtml += '</ul>';
+
+                        if (errorAlert) {
+                            errorAlert.innerHTML = errorHtml;
+                            errorAlert.style.display = 'block';
+                        } else {
+                            const newErrorAlert = document.createElement('div');
+                            newErrorAlert.className = 'alert alert-danger';
+                            newErrorAlert.id = 'errorAlert';
+                            newErrorAlert.innerHTML = errorHtml;
+                            form.parentNode.insertBefore(newErrorAlert, form);
+                        }
+
+                        window.scrollTo(0, 0);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
 @endsection
